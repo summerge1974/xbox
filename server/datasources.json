@@ -1,0 +1,21 @@
+{
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
+  "main_DBConnect": {
+    "host": "rm-wz9q9pyn85tbd3785o.mysql.rds.aliyuncs.com",
+    "port": "3306",
+    "database": "health",
+    "password": "manKang@0307",
+    "name": "main_DBConnect",
+    "connector": "mysql",
+    "user": "mankang",
+    "multipleStatements": true,
+    "pool": {
+      "min": 0,
+      "max": 10,
+      "idleTimeoutMillis": 300
+    }
+  }  
+}
