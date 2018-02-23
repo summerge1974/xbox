@@ -603,8 +603,6 @@ module.exports = function(Xbox) {
                 "token": token
             }));
         })
-
-
     }
 
     Xbox.remoteMethod(
