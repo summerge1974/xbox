@@ -511,28 +511,28 @@ module.exports = function(Xbox) {
                 "result": ""
             }));
             return;
-        }        
+        }
 
         var bsSQL = "select price * 100 as price,buyTime from xb_VIPPrice where id = " + memberShip.id;
 
         DoSQL(bsSQL, function(err, result) {
             wx_CreateOrders(result[0].price).then(function(payout) {
 
-                if ( payout.return_code == 'FAIL'){
+                if (payout.return_code == 'FAIL') {
                     cb(null, {
                         status: 0,
                         "result": payout
                     });
                     return;
                 }
-                bsSQL = "insert into xb_userOrders(openid,addtime,paystatus,fee,buytime,payorderid) values('"+OpenID.openid+"',now(),'payment',"+result[0].price+","+result[0].buyTime + ",'"+payout.out_trade_no+"');";
-                DoSQL(bsSQL, function(err){
-                    if ( !err ){
+                bsSQL = "insert into xb_userOrders(openid,addtime,paystatus,fee,buytime,payorderid) values('" + OpenID.openid + "',now(),'payment'," + result[0].price + "," + result[0].buyTime + ",'" + payout.out_trade_no + "');";
+                DoSQL(bsSQL, function(err) {
+                    if (!err) {
                         cb(null, {
                             status: 1,
                             "result": payout
                         });
-                    }else{
+                    } else {
                         cb(null, {
                             status: 0,
                             "result": ""
@@ -562,7 +562,7 @@ module.exports = function(Xbox) {
                     source: 'body'
                 },
                 description: '{id:1}'
-            },{
+            }, {
                 arg: 'token',
                 type: 'string',
                 http: function(ctx) {
@@ -570,7 +570,49 @@ module.exports = function(Xbox) {
                     return req.headers.token;
                 },
                 description: 'token'
-            }],            
+            }],
+            returns: {
+                arg: 'echostr',
+                type: 'object',
+                root: true
+            }
+
+        }
+    );
+
+
+    Xbox.getTestToken = function(cb) {
+        EWTRACEBEGIN();
+
+        var OpenID = {
+            openid: 'oFVZ-1Mf3yxWLWHQPE_3BhlVFnGU',
+            nickname: '张三',
+            sex: 1,
+            language: 'zh_CN',
+            city: 'Hangzhou',
+            province: 'Zhejiang',
+            country: 'China',
+            headimgurl: 'http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJicLw2MkRZ4mT841tP9ItuXicPiaibibZ9ia5AxT4icS28uicEbK5wtVymkYEcodvUVWKsKia1koDnHoWoo9g/132',
+            privilege: [],
+            unionid: 'oBQ4y01s_iPdv-NqE8zonMYFfuus'
+        };
+
+        getWeChatToken(OpenID).then(function(token){
+            cb(null, EWTRACEEND({
+                status: 0,
+                "token": token
+            }));
+        })
+
+
+    }
+
+    Xbox.remoteMethod(
+        'getTestToken', {
+            http: {
+                verb: 'post'
+            },
+            description: '获取测试token',
             returns: {
                 arg: 'echostr',
                 type: 'object',

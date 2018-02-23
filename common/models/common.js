@@ -1,5 +1,6 @@
 var log4js = require('log4js');
 var needle = require('needle')
+require('dotenv').config({ path: './config/.env' });
 
 module.exports = function(Common) {
 
@@ -194,7 +195,7 @@ module.exports = function(Common) {
 
     wx_GetNickName = function(openId) {
         return new Promise(function(resolve, reject) {
-            var url = "http://style.man-kang.com:3000/nickname?appId=wx397644d24ec87fd1&openid=" + openId;
+            var url = process.env.global_wxurl+"/nickname?appId="+process.env.wxAppID+"&openid=" + openId;
             console.log(url);
             needle.get(encodeURI(url), null, function(err, userInfo) {
 
@@ -211,7 +212,7 @@ module.exports = function(Common) {
     wx_CreateOrders = function(fee) {
         return new Promise(function(resolve, reject) {
             var _fee = fee * 100;
-            var url = "http://style.man-kang.com:3000/createorders?appId=wx012a9130903a7396&fee="+_fee+"&notifyUrl=http://style.man-kang.com:8800/api/weChatEvents/wxnotify";
+            var url = process.env.global_wxurl+"/createorders?appId="+process.env.wxAppID+"&fee="+_fee+"&notifyUrl=http://style.man-kang.com:8800/api/weChatEvents/wxnotify";
             console.log(url);
             needle.get(encodeURI(url), null, function(err, userInfo) {
 
