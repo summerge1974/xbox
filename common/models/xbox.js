@@ -155,7 +155,7 @@ module.exports = function(Xbox) {
         var _userInfo = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
 
-        bsSQL = "SELECT a.deviceId,a.categoryId,a.bookId,b.categoryId,b.title,b.image,now() as startDate, date_add(now(), interval b.leaseDays day) as endDate FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and a.deviceId like '%" + _deviceId + "%' order by a.categoryId";
+        bsSQL = "SELECT a.deviceId,a.cageId,a.bookId,b.categoryId,b.title,b.image,now() as startDate, date_add(now(), interval b.leaseDays day) as endDate FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and a.deviceId like '%" + _deviceId + "%' order by a.cageId";
         var _booksList = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _booksList));
 
@@ -181,6 +181,7 @@ module.exports = function(Xbox) {
                     var _book = {};
                     _book.deviceId = item.deviceId;
                     _book.categoryId = item.categoryId;
+                    _book.cageId = item.cageId;
                     _book.id = item.bookId;
                     _book.title = item.title;
                     _book.image = item.image;
@@ -312,7 +313,7 @@ module.exports = function(Xbox) {
             return;
         }
         var ps = [];
-        var bsSQL = "select * from xb_devicebooks where bookid = " + bookId.id + " and deviceId=" + bookId.deviceId + " and categoryId = " + bookId.categoryId;
+        var bsSQL = "select * from xb_devicebooks where bookid = " + bookId.id + " and deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
         var _deviceBookInfo = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _deviceBookInfo));
 
@@ -338,7 +339,7 @@ module.exports = function(Xbox) {
             }
 
             bsSQL = "insert into xb_userbooks(openid,bookid,startDate) values('" + OpenID.openid + "'," + bookId.id + ", now());";
-            bsSQL += "delete from xb_devicebooks where bookid = " + bookId.id + " and deviceId=" + bookId.deviceId + " and categoryId = " + bookId.categoryId;
+            bsSQL += "delete from xb_devicebooks where bookid = " + bookId.id + " and deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
 
             DoSQL(bsSQL, function(err) {
                 if (err) {
@@ -373,7 +374,7 @@ module.exports = function(Xbox) {
                 http: {
                     source: 'body'
                 },
-                description: '{id:1,deviceId:12345678,categoryId:1}'
+                description: '{id:1,deviceId:12345678,cageId:1}'
             }, {
                 arg: 'token',
                 type: 'string',
