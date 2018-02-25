@@ -97,11 +97,18 @@ module.exports = function(Xbox) {
                     "result": ""
                 }));
             } else {
+                if ( result.length == 0 ){
+                    cb(null, EWTRACEEND({
+                        status: 0,
+                        "result": "用户未注册"
+                    }));
+                }else{
+                    cb(null, EWTRACEEND({
+                        status: 1,
+                        "result": result[0]
+                    }));
+                }
 
-                cb(null, EWTRACEEND({
-                    status: 1,
-                    "result": result
-                }));
             }
         })
     }
