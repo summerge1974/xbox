@@ -341,6 +341,7 @@ module.exports = function(Xbox) {
             bsSQL = "insert into xb_userbooks(openid,bookid,startDate) values('" + OpenID.openid + "'," + bookId.id + ", now());";
             bsSQL += "delete from xb_devicebooks where bookid = " + bookId.id + " and deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
 
+            bsSQL = "select * from xb_devicebooks";
             DoSQL(bsSQL, function(err) {
                 if (err) {
                     cb(err, EWTRACEEND({
