@@ -484,7 +484,7 @@ module.exports = function(Xbox) {
 
                 cb(null, EWTRACEEND({
                     status: 1,
-                    "token": result
+                    "result": result
                 }));
             }
         })
