@@ -145,16 +145,21 @@ module.exports = function(Xbox) {
             return;
         }
 
+        var _deviceId = "12345678";
+        if ( !_.isUndefined(deviceInfo)){
+            _deviceId = deviceInfo.deviceId;
+        }
+
         var ps = [];
         var bsSQL = "select * from xb_users where isVip = 1 and openid = '" + OpenID.openid + "'";
         var _userInfo = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
 
-        bsSQL = "SELECT a.deviceId,a.cageId,a.bookId,b.categoryId,b.title,b.image,now() as startDate, date_add(now(), interval b.leaseDays day) as endDate FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and a.deviceId = " + deviceInfo.deviceId + " order by a.cageId";
+        bsSQL = "SELECT a.deviceId,a.cageId,a.bookId,b.categoryId,b.title,b.image,now() as startDate, date_add(now(), interval b.leaseDays day) as endDate FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and a.deviceId like '%" + deviceInfo.deviceId + "%' order by a.cageId";
         var _booksList = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _booksList));
 
-        bsSQL = "select a.categorieId as id, a.categoriename as name from xb_categories a where a.categorieId in (select categorieId from xb_devicebooks where deviceID = " + deviceInfo.deviceId + ") ";
+        bsSQL = "select a.categorieId as id, a.categoriename as name from xb_categories a where a.categorieId in (select categorieId from xb_devicebooks where deviceID like '%" + _deviceId + "%' ";
         var _bookcategories = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _bookcategories));
 
