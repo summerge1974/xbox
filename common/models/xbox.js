@@ -97,12 +97,12 @@ module.exports = function(Xbox) {
                     "result": ""
                 }));
             } else {
-                if ( result.length == 0 ){
+                if (result.length == 0) {
                     cb(null, EWTRACEEND({
                         status: 0,
                         "result": "用户未注册"
                     }));
-                }else{
+                } else {
                     cb(null, EWTRACEEND({
                         status: 1,
                         "result": result[0]
@@ -153,7 +153,7 @@ module.exports = function(Xbox) {
         }
 
         var _deviceId = "12345678";
-        if ( !_.isUndefined(deviceInfo.deviceId)){
+        if (!_.isUndefined(deviceInfo.deviceId)) {
             _deviceId = deviceInfo.deviceId;
         }
 
@@ -185,18 +185,44 @@ module.exports = function(Xbox) {
                 _result.books = [];
 
                 _booksList.Result.forEach(function(item) {
-                    var _book = {};
-                    _book.deviceId = item.deviceId;
-                    _book.categoryId = item.categoryId;
-                    _book.cageId = item.cageId;
-                    _book.id = item.bookId;
-                    _book.title = item.title;
-                    _book.image = item.image;
-                    _book.lease = {};
-                    _book.lease.startDate = item.startDate;
-                    _book.lease.endDate = item.endDate;
 
-                    _result.books.push(_book);
+
+                    var find = _.find(_result.books, function(fitem) {
+
+                        return fitem.deviceId == item.deviceId && fitem.cageId == item.cageId;
+                    })
+
+                    if (_.isUndefined(find)) {
+
+                        var _book = {};
+                        _book.deviceId = item.deviceId;
+                        _book.categoryId = item.categoryId;
+                        _book.cageId = item.cageId;
+                        _book.id = [];
+
+                        var _bookdetail = {};
+                        _bookdetail.id = item.bookId;
+                        _bookdetail.title = item.title;
+                        _bookdetail.image = item.image;
+                        _bookdetail.lease = {};
+                        _bookdetail.lease.startDate = item.startDate;
+                        _bookdetail.lease.endDate = item.endDate;
+
+                        _book.id.push(_bookdetail);
+
+                        _result.books.push(_book);
+                    } else {
+                        var _bookdetail = {};
+                        _bookdetail.id = item.bookId;
+                        _bookdetail.title = item.title;
+                        _bookdetail.image = item.image;
+                        _bookdetail.lease = {};
+                        _bookdetail.lease.startDate = item.startDate;
+                        _bookdetail.lease.endDate = item.endDate;                        
+                        find.id.push(_bookdetail);
+
+                    }
+
                 })
 
                 cb(null, EWTRACEEND({
@@ -345,8 +371,8 @@ module.exports = function(Xbox) {
                 return;
             }
 
-            bsSQL = "insert into xb_userbooks(openid,bookid,startDate) values('" + OpenID.openid + "'," + bookId.id + ", now());";
-            bsSQL += "delete from xb_devicebooks where bookid = " + bookId.id + " and deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
+            bsSQL = "insert into xb_userbooks(openid,bookid,startDate) select '" + OpenID.openid + "' as openid,id as bookid, now() from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId + ";";
+            bsSQL += "delete from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
 
             bsSQL = "select * from xb_devicebooks";
             DoSQL(bsSQL, function(err) {
@@ -611,7 +637,7 @@ module.exports = function(Xbox) {
             unionid: 'oBQ4y01s_iPdv-NqE8zonMYFfuus'
         };
 
-        getWeChatToken(OpenID).then(function(token){
+        getWeChatToken(OpenID).then(function(token) {
             cb(null, EWTRACEEND({
                 status: 0,
                 "token": token
