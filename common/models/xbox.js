@@ -136,7 +136,7 @@ module.exports = function(Xbox) {
         }
     );
 
-    Xbox.getBooks = function(deviceInfo, token, cb) {
+    Xbox.getProducts = function(deviceInfo, token, cb) {
         EWTRACEBEGIN();
 
         var OpenID = {};
@@ -182,6 +182,7 @@ module.exports = function(Xbox) {
 
                 var _result = {};
                 _result.categories = _bookcategories.Result;
+             
                 _result.books = [];
 
                 _booksList.Result.forEach(function(item) {
@@ -198,17 +199,18 @@ module.exports = function(Xbox) {
                         _book.deviceId = item.deviceId;
                         _book.categoryId = item.categoryId;
                         _book.cageId = item.cageId;
-                        _book.id = [];
+                        _book.lease = {};
+                        _book.lease.startDate = item.startDate;
+                        _book.lease.endDate = item.endDate;   
+
+                        _book.details = [];
 
                         var _bookdetail = {};
                         _bookdetail.id = item.bookId;
                         _bookdetail.title = item.title;
                         _bookdetail.image = item.image;
-                        _bookdetail.lease = {};
-                        _bookdetail.lease.startDate = item.startDate;
-                        _bookdetail.lease.endDate = item.endDate;
 
-                        _book.id.push(_bookdetail);
+                        _book.details.push(_bookdetail);
 
                         _result.books.push(_book);
                     } else {
@@ -216,10 +218,8 @@ module.exports = function(Xbox) {
                         _bookdetail.id = item.bookId;
                         _bookdetail.title = item.title;
                         _bookdetail.image = item.image;
-                        _bookdetail.lease = {};
-                        _bookdetail.lease.startDate = item.startDate;
-                        _bookdetail.lease.endDate = item.endDate;                        
-                        find.id.push(_bookdetail);
+                     
+                        find.details.push(_bookdetail);
 
                     }
 
@@ -240,7 +240,7 @@ module.exports = function(Xbox) {
         });
     }
     Xbox.remoteMethod(
-        'getBooks', {
+        'getProducts', {
             http: {
                 verb: 'post'
             },
@@ -270,10 +270,18 @@ module.exports = function(Xbox) {
         }
     );
 
-    Xbox.getBookDetail = function(bookId, cb) {
+    Xbox.getProductDetail = function(bookIds, cb) {
         EWTRACEBEGIN();
 
-        var bsSQL = "select bookid as id, detailimages as images, title,author,press,price,now() as startDate, date_add(now(), interval leaseDays day) as endDate from xb_books where bookid = " + bookId.id;
+        var _booklist = "";
+        bookIds.forEach(function(item){
+            _booklist += item + ',';
+        })
+        if ( _booklist.length >= 1 ){
+            _booklist = _booklist.substr(0,_booklist.length-1);
+        }
+
+        var bsSQL = "select bookid as id, detailimages as images, title,author,press,price,now() as startDate, date_add(now(), interval leaseDays day) as endDate from xb_books where bookid in (" + _booklist + ")";
 
         DoSQL(bsSQL, function(err, result) {
             if (err) {
@@ -292,14 +300,22 @@ module.exports = function(Xbox) {
                 }
 
                 var _book = {};
-                _book.id = result[0].id;
-                _book.title = result[0].title;
-                _book.images = result[0].images;
-                _book.press = result[0].press;
-                _book.price = result[0].price;
+
                 _book.lease = {};
                 _book.lease.startDate = result[0].startDate;
                 _book.lease.endDate = result[0].endDate;
+                _book.detail = [];
+
+                result.forEach(function(item){
+                    var _bookdetail = {};
+                    _bookdetail.id = item.id;
+                    _bookdetail.title = item.title;
+                    _bookdetail.images = item.images;
+                    _bookdetail.press = item.press;
+                    _bookdetail.price = item.price;
+                    _book.detail.push(_bookdetail);
+                })
+
                 cb(null, EWTRACEEND({
                     status: 1,
                     "result": _book
@@ -308,18 +324,18 @@ module.exports = function(Xbox) {
         })
     }
     Xbox.remoteMethod(
-        'getBookDetail', {
+        'getProductDetail', {
             http: {
                 verb: 'post'
             },
             description: '获取书籍详细信息',
             accepts: {
-                arg: 'bookId',
+                arg: 'bookIds',
                 type: 'object',
                 http: {
                     source: 'body'
                 },
-                description: '{id:1}'
+                description: '[1,2,3]'
             },
             returns: {
                 arg: 'echostr',
