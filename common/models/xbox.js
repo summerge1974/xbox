@@ -88,7 +88,7 @@ module.exports = function(Xbox) {
             return;
         }
 
-        var bsSQL = "select name,isVip,expireDate from xb_users where openid = '" + OpenID.openid + "'";
+        var bsSQL = "select openid as id,name,isVip,expireDate from xb_users where openid = '" + OpenID.openid + "'";
 
         DoSQL(bsSQL, function(err, result) {
             if (err) {
@@ -362,7 +362,7 @@ module.exports = function(Xbox) {
             return;
         }
         var ps = [];
-        var bsSQL = "select * from xb_devicebooks where bookid = " + bookId.id + " and deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
+        var bsSQL = "select * from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
         var _deviceBookInfo = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _deviceBookInfo));
 

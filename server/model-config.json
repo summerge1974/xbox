@@ -44,5 +44,9 @@
   "xbox": {
     "dataSource": "db",
     "public": true
+  },
+  "xboxmanager": {
+    "dataSource": "main_DBConnect",
+    "public": true
   }
 }
