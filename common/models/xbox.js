@@ -459,7 +459,7 @@ module.exports = function(Xbox) {
             return;
         }
 
-        var bsSQL = "SELECT b.bookId as id, b.title,a.startDate,date_add(a.startDate, interval b.leaseDays day) as endDate ,a.returnDate FROM xb_userbooks a, xb_books b where a.bookid = b.bookid and a.openid = '" + OpenID.openid + "' order by a.startDate desc limit 30";
+        var bsSQL = "SELECT b.bookId as id, b.title, b.author,a.startDate,date_add(a.startDate, interval b.leaseDays day) as endDate ,a.returnDate FROM xb_userbooks a, xb_books b where a.bookid = b.bookid and a.openid = '" + OpenID.openid + "' order by a.startDate desc limit 30";
         DoSQL(bsSQL, function(err, result) {
 
             if (err) {

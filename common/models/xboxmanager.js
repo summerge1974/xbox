@@ -156,7 +156,7 @@ module.exports = function(Xboxmanager) {
             return;
         }
 
-        var bsSQL = "select openid,a.bookid,b.title,startDate,date_add(startDate, interval 30 day) as endDate from xb_userbooks a, xb_books b where a.bookid = b.bookid and openid = '" + userInfo.id + "' and returndate is null";
+        var bsSQL = "select openid,a.bookid,b.title,b.author,startDate,date_add(startDate, interval 30 day) as endDate from xb_userbooks a, xb_books b where a.bookid = b.bookid and openid = '" + userInfo.id + "' and returndate is null";
         DoSQL(bsSQL, function(err, result) {
             if (err) {
                 cb(err, EWTRACEEND({
@@ -178,6 +178,7 @@ module.exports = function(Xboxmanager) {
                     var _detail = {};
                     _detail.id = item.bookid;
                     _detail.title = item.title;
+                    _detail.author = item.author;
                     _result.details.push(_detail);
                 })
 
@@ -297,7 +298,7 @@ module.exports = function(Xboxmanager) {
             return;
         }
 
-        var bsSQL = "SELECT cageid,a.bookid as id,b.title,b.image FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid = '" + deviceInfo.id + "' order by cageid";
+        var bsSQL = "SELECT cageid,a.bookid as id,b.title,b.image,b.author FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid = '" + deviceInfo.id + "' order by cageid";
         DoSQL(bsSQL, function(err, result) {
             if (err) {
                 cb(err, EWTRACEEND({
@@ -433,7 +434,7 @@ module.exports = function(Xboxmanager) {
             return;
         }
 
-        var bsSQL = "select bookid as id, title,image from xb_books where barcode = '" + deviceInfo.isbn + "'";
+        var bsSQL = "select bookid as id, title,image,author from xb_books where barcode = '" + deviceInfo.isbn + "'";
 
         DoSQL(bsSQL, function(err, result) {
 
@@ -457,10 +458,23 @@ module.exports = function(Xboxmanager) {
                                 "result": err.message
                             }));
                         } else {
-                            cb(null, EWTRACEEND({
-                                status: 1,
-                                "result": result
-                            }));
+
+                            bsSQL = "select "+deviceInfo.cageId+" as cageId, b.bookId,b.title,b.image,b.author from xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid = '" + deviceInfo.deviceId + "' and cageid = " + deviceInfo.cageId;
+                            DoSQL(bsSQL,function(err, resultbox){
+                                if ( err ){
+                                    cb(err, EWTRACEEND({
+                                        status: 0,
+                                        "result": err.message
+                                    }));
+                                }else{
+                                    cb(null, EWTRACEEND({
+                                        status: 1,
+                                        "result": resultbox
+                                    }));
+                                }
+
+                            })
+
                         }
                     })
 
