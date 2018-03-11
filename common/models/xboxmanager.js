@@ -13,10 +13,12 @@ module.exports = function(Xboxmanager) {
     Xboxmanager.login = function(userInfo, cb) {
         EWTRACEBEGIN();
 
-        var url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + process.env.wxProductAppID + "&secret=" + process.env.wxProductSecret + "&js_code="+userInfo.code+"&grant_type=authorization_code";
+        var url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + process.env.wxProductAppID + "&secret=" + process.env.wxProductSecret + "&js_code=" + userInfo.code + "&grant_type=authorization_code";
+        EWTRACE(url);
 
         needle.get(encodeURI(url), {}, function(err, resp) {
 
+            
             if (err) {
 
                 cb(err, EWTRACEEND({
@@ -24,7 +26,17 @@ module.exports = function(Xboxmanager) {
                     "token": err.message
                 }));
             } else {
-                getWeChatToken(resp).then(function(resultToken) {
+
+                var userInfo = JSON.parse(resp.body);
+                if ( !_.isUndefined(userInfo.errcode ))
+                {
+                    cb(null, EWTRACEEND({
+                        status: 0,
+                        "token": userInfo.errmsg
+                    }));
+                    return;
+                }
+                getWeChatToken(JSON.parse(resp.body)).then(function(resultToken) {
 
                     var bsSQL = "select * from xb_manager where openid = '" + resultToken.openid + "'";
                     DoSQL(bsSQL, function(err, result) {
@@ -33,21 +45,14 @@ module.exports = function(Xboxmanager) {
 
                         } else {
                             if (result.length == 0) {
-                                bsSQL = "insert into xb_mananger(openid,deviceid) values('" + resultToken.openid + "','')";
+                                bsSQL = "insert into xb_manager(openid,deviceid) values('" + resultToken.openid + "','')";
                                 DoSQL(bsSQL);
                             }
 
-                            if (result[0].deviceid != '') {
-                                cb(null, EWTRACEEND({
-                                    status: 1,
-                                    "token": resultToken
-                                }));
-                            } else {
-                                cb(null, EWTRACEEND({
-                                    status: 0,
-                                    "token": "账号未授权"
-                                }));
-                            }
+                            cb(null, EWTRACEEND({
+                                status: 1,
+                                "token": resultToken
+                            }));
                         }
                     })
 
@@ -425,9 +430,9 @@ module.exports = function(Xboxmanager) {
             return;
         }
 
-        var bsSQL = "select bookid as id, title,image from xb_books where barcode = '" + deviceInfo.isbn+ "'";
+        var bsSQL = "select bookid as id, title,image from xb_books where barcode = '" + deviceInfo.isbn + "'";
 
-        DoSQL(bsSQL, function(err, result){
+        DoSQL(bsSQL, function(err, result) {
 
             if (err) {
                 cb(err, EWTRACEEND({
@@ -435,31 +440,30 @@ module.exports = function(Xboxmanager) {
                     "result": err.message
                 }));
             } else {
-                if ( result.length == 0 ){
+                if (result.length == 0) {
                     cb(null, EWTRACEEND({
                         status: 0,
                         "result": "条形码未找到"
                     }));
-                }else{
-                    bsSQL = "insert into xb_devicebooks(deviceid,cageid,bookid) values('"+deviceInfo.deviceId+"','"+deviceInfo.cageId+"'," + result[0].id +");";
-                    DoSQL(bsSQL,function(err){
-                        if ( err ){
+                } else {
+                    bsSQL = "insert into xb_devicebooks(deviceid,cageid,bookid) values('" + deviceInfo.deviceId + "','" + deviceInfo.cageId + "'," + result[0].id + ");";
+                    DoSQL(bsSQL, function(err) {
+                        if (err) {
                             cb(err, EWTRACEEND({
                                 status: 0,
                                 "result": err.message
                             }));
-                        }
-                        else{
+                        } else {
                             cb(null, EWTRACEEND({
                                 status: 1,
                                 "result": result
-                            })); 
+                            }));
                         }
                     })
 
                 }
 
-               
+
             }
         })
 
@@ -494,5 +498,5 @@ module.exports = function(Xboxmanager) {
             }
 
         }
-    );    
+    );
 };
