@@ -10,10 +10,10 @@ module.exports = function(Xboxmanager) {
         path: './config/.env'
     });
 
-    Xboxmanager.login = function(token, cb) {
+    Xboxmanager.login = function(userInfo, cb) {
         EWTRACEBEGIN();
 
-        var url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + process.env.wxProductAppID + "&secret=" + process.env.wxProductSecret + "&js_code=JSCODE&grant_type=authorization_code";
+        var url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + process.env.wxProductAppID + "&secret=" + process.env.wxProductSecret + "&js_code="+userInfo.code+"&grant_type=authorization_code";
 
         needle.get(encodeURI(url), {}, function(err, resp) {
 
@@ -63,13 +63,12 @@ module.exports = function(Xboxmanager) {
             },
             description: '管理员登录',
             accepts: {
-                arg: 'token',
-                type: 'string',
-                http: function(ctx) {
-                    var req = ctx.req;
-                    return req.headers.token;
+                arg: 'userInfo',
+                type: 'object',
+                http: {
+                    source: 'body'
                 },
-                description: 'token'
+                description: '{code:11111111}'
             },
             returns: {
                 arg: 'echostr',
