@@ -37,7 +37,7 @@ module.exports = function(Xboxmanager) {
                     return;
                 }
                 getWeChatToken(JSON.parse(resp.body)).then(function(resultToken) {
-
+                    EWTRACE(resp.body);
                     var bsSQL = "select * from xb_manager where openid = '" + resultToken.openid + "'";
                     DoSQL(bsSQL, function(err, result) {
 
