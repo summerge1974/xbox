@@ -387,7 +387,7 @@ module.exports = function(Xbox) {
                 return;
             }
 
-            bsSQL = "insert into xb_userbooks(openid,bookid,startDate) select '" + OpenID.openid + "' as openid,id as bookid, now() from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId + ";";
+            bsSQL = "insert into xb_userbooks(openid,bookid,startDate) select '" + OpenID.openid + "' as openid, bookid, now() from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId + ";";
             bsSQL += "delete from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
 
             DoSQL(bsSQL, function(err) {
