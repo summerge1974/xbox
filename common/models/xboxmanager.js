@@ -42,7 +42,10 @@ module.exports = function(Xboxmanager) {
                     DoSQL(bsSQL, function(err, result) {
 
                         if (err) {
-
+                            cb(err, EWTRACEEND({
+                                status: 0,
+                                "token": err.message
+                            }));
                         } else {
                             if (result.length == 0) {
                                 bsSQL = "insert into xb_manager(openid,deviceid) values('" + userInfo.openid + "','')";
