@@ -38,14 +38,14 @@ module.exports = function(Xboxmanager) {
                 }
                 getWeChatToken(JSON.parse(resp.body)).then(function(resultToken) {
                     EWTRACE(resp.body);
-                    var bsSQL = "select * from xb_manager where openid = '" + resultToken.openid + "'";
+                    var bsSQL = "select * from xb_manager where openid = '" + userInfo.openid + "'";
                     DoSQL(bsSQL, function(err, result) {
 
                         if (err) {
 
                         } else {
                             if (result.length == 0) {
-                                bsSQL = "insert into xb_manager(openid,deviceid) values('" + resultToken.openid + "','')";
+                                bsSQL = "insert into xb_manager(openid,deviceid) values('" + userInfo.openid + "','')";
                                 DoSQL(bsSQL);
                             }
 
