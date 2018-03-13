@@ -313,6 +313,7 @@ module.exports = function(Xbox) {
                     _bookdetail.images = item.images;
                     _bookdetail.press = item.press;
                     _bookdetail.price = item.price;
+                    _bookdetail.author = item.author;
                     _book.detail.push(_bookdetail);
                 })
 

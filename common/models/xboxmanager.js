@@ -164,6 +164,13 @@ module.exports = function(Xboxmanager) {
                     "result": ""
                 }));
             } else {
+                if ( result.length == 0 ){
+                    cb(null, EWTRACEEND({
+                        status: 0,
+                        "result": "用户未借书或已还清~"
+                    }));
+                    return;
+                }
 
                 var _result = {};
 
