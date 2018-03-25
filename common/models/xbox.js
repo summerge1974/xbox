@@ -4,7 +4,7 @@ var _ = require('underscore');
 module.exports = function(Xbox) {
     var app = require('../../server/server');
     app.DisableSystemMethod(Xbox);
-
+    const util = require('util');
     Xbox.login = function(token, cb) {
         EWTRACEBEGIN();
 
@@ -182,7 +182,7 @@ module.exports = function(Xbox) {
 
                 var _result = {};
                 _result.categories = _bookcategories.Result;
-             
+
                 _result.books = [];
 
                 _booksList.Result.forEach(function(item) {
@@ -201,7 +201,7 @@ module.exports = function(Xbox) {
                         _book.cageId = item.cageId;
                         _book.lease = {};
                         _book.lease.startDate = item.startDate;
-                        _book.lease.endDate = item.endDate;   
+                        _book.lease.endDate = item.endDate;
 
                         _book.details = [];
 
@@ -218,7 +218,7 @@ module.exports = function(Xbox) {
                         _bookdetail.id = item.bookId;
                         _bookdetail.title = item.title;
                         _bookdetail.image = item.image;
-                     
+
                         find.details.push(_bookdetail);
 
                     }
@@ -274,11 +274,11 @@ module.exports = function(Xbox) {
         EWTRACEBEGIN();
 
         var _booklist = "";
-        bookIds.forEach(function(item){
+        bookIds.forEach(function(item) {
             _booklist += item + ',';
         })
-        if ( _booklist.length >= 1 ){
-            _booklist = _booklist.substr(0,_booklist.length-1);
+        if (_booklist.length >= 1) {
+            _booklist = _booklist.substr(0, _booklist.length - 1);
         }
 
         var bsSQL = "select bookid as id, detailimages as images, title,author,press,price,now() as startDate, date_add(now(), interval leaseDays day) as endDate from xb_books where bookid in (" + _booklist + ")";
@@ -306,7 +306,7 @@ module.exports = function(Xbox) {
                 _book.lease.endDate = result[0].endDate;
                 _book.detail = [];
 
-                result.forEach(function(item){
+                result.forEach(function(item) {
                     var _bookdetail = {};
                     _bookdetail.id = item.id;
                     _bookdetail.title = item.title;
@@ -711,12 +711,47 @@ module.exports = function(Xbox) {
         return hexA;
     }
 
+    var _detail = function(detail) {
+        var len = detail.num.toString().length;
+        if (len < detail.n) {
+            detail.num = '0' + detail.num;
+            _detail( detail )
+        }else{
+            return ;
+        }
+    }
+
+    var pad = function pad(num, n) {
+        var detail = {};
+        detail.num = num;
+        detail.n = n;
+        _detail(detail);
+        return detail.num;
+    }
+
+    function convertNumber(strboxId) {
+
+        var byteNumber = '8A';
+        var boxId = parseInt(strboxId);
+        if (boxId - 10 <= 0) {
+            byteNumber += '00';
+            byteNumber += pad(boxId, 2);
+        } else {
+            var page = parseInt((boxId - 10) / 40);
+            byteNumber += pad(page + 1, 2);
+            byteNumber += pad((boxId - 10 - (page) * 40), 2);
+        }
+        byteNumber += '11';
+        return byteNumber;
+    }
+
     Xbox.openDoor = function(GetTicket, cb) {
         EWTRACE("openDoor Begin");
 
+        var doorId = convertNumber(GetTicket.Data);
         // var _tmp = 'NBES,ID=22222222,STATE=FIRST';
         // var _obj = _tmp.substr(4);     
-
+        EWTRACE(doorId);
 
         var socketList = app.get('m_socketList');
 
@@ -725,21 +760,21 @@ module.exports = function(Xbox) {
         })
         if (!_.isUndefined(find)) {
             // 计算二进制BCC校验码，放入发送的最后一个字节中
-            var _tmp = Str2Bytes(GetTicket.Data);   
+            var _tmp = Str2Bytes(doorId);
 
             var _val = undefined;
-            for ( var i in _tmp ){
-                if ( _.isUndefined(_val)){
+            for (var i in _tmp) {
+                if (_.isUndefined(_val)) {
                     _val = _tmp[i];
-                }else{
+                } else {
                     _val ^= _tmp[i];
                 }
             }
             _tmp.push(_val);
             // 计算二进制BCC校验码，放入发送的最后一个字节中
-            
+
             var sendOver = find.userSocket.write(new Buffer(_tmp));
-            console.log('DeviceID:' + GetTicket.deviceId + ": Data：" + GetTicket.Data + ", sendOver:" + sendOver);
+            console.log('DeviceID:' + GetTicket.deviceId + ": Data：" + doorId + ", sendOver:" + sendOver);
 
             cb(null, {
                 status: 1,
@@ -772,5 +807,5 @@ module.exports = function(Xbox) {
             }
         }
     );
-    
+
 };
