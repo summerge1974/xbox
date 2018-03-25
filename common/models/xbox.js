@@ -711,22 +711,26 @@ module.exports = function(Xbox) {
         return hexA;
     }
 
-    var _detail = function(detail) {
-        var len = detail.num.toString().length;
-        if (len < detail.n) {
-            detail.num = '0' + detail.num;
-            _detail( detail )
-        }else{
-            return ;
-        }
-    }
+
 
     var pad = function pad(num, n) {
+
+        var _detail = function(detail) {
+            var len = detail.num.toString().length;
+            if (len < detail.n) {
+                detail.num = '0' + detail.num;
+                _detail( detail )
+            }else{
+                return ;
+            }
+        }  
+
         var detail = {};
         detail.num = num;
         detail.n = n;
         _detail(detail);
         return detail.num;
+
     }
 
     function convertNumber(strboxId) {
