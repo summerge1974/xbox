@@ -675,4 +675,102 @@ module.exports = function(Xbox) {
 
         }
     );
+
+
+    function Str2Bytes(str) {
+        var pos = 0;
+        var len = str.length;
+        if (len % 2 != 0) {
+            return null;
+        }
+        len /= 2;
+        var hexA = new Array();
+        for (var i = 0; i < len; i++) {
+            var s = str.substr(pos, 2);
+            var v = parseInt(s, 16);
+            hexA.push(v);
+            pos += 2;
+        }
+        return hexA;
+    }
+
+    function Str2Bytes10(str) {
+        var pos = 0;
+        var len = str.length;
+        if (len % 2 != 0) {
+            return null;
+        }
+        len /= 2;
+        var hexA = new Array();
+        for (var i = 0; i < len; i++) {
+            var s = str.substr(pos, 2);
+            var v = parseInt(s, 10);
+            hexA.push(v);
+            pos += 2;
+        }
+        return hexA;
+    }
+
+    Xbox.openDoor = function(GetTicket, cb) {
+        EWTRACE("openDoor Begin");
+
+        // var _tmp = 'NBES,ID=22222222,STATE=FIRST';
+        // var _obj = _tmp.substr(4);     
+
+
+        var socketList = app.get('m_socketList');
+
+        var find = _.find(socketList, function(item) {
+            return item.DeviceID == GetTicket.deviceId;
+        })
+        if (!_.isUndefined(find)) {
+            // 计算二进制BCC校验码，放入发送的最后一个字节中
+            var _tmp = Str2Bytes(GetTicket.Data);   
+
+            var _val = undefined;
+            for ( var i in _tmp ){
+                if ( _.isUndefined(_val)){
+                    _val = _tmp[i];
+                }else{
+                    _val ^= _tmp[i];
+                }
+            }
+            _tmp.push(_val);
+            // 计算二进制BCC校验码，放入发送的最后一个字节中
+            
+            var sendOver = find.userSocket.write(new Buffer(_tmp));
+            console.log('DeviceID:' + GetTicket.deviceId + ": Data：" + GetTicket.Data + ", sendOver:" + sendOver);
+
+            cb(null, {
+                status: 1,
+                "result": ""
+            });
+        } else {
+            cb(null, {
+                status: 0,
+                "result": "device not find!"
+            });
+        }
+
+    };
+
+    Xbox.remoteMethod(
+        'openDoor', {
+            http: {
+                verb: 'post'
+            },
+            description: '获得Ticket',
+            accepts: {
+                arg: 'GetTicket',
+                type: 'object',
+                description: '{"deviceId":"11111111","Data":"8A000111"}'
+            },
+            returns: {
+                arg: 'RegInfo',
+                type: 'object',
+                root: true
+            }
+        }
+    );
+    
 };
