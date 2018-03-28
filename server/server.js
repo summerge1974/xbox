@@ -133,7 +133,7 @@ net.createServer(function(sock) {
     var socketList = app.get('m_socketList');
 
     // 我们获得一个连接 - 该连接自动关联一个socket对象
-    console.log('CONNECTED: ' +
+    EWTRACE('CONNECTED: ' +
         sock.remoteAddress + ':' + sock.remotePort);
     app.set('publicSocket', sock);
 
@@ -144,7 +144,7 @@ net.createServer(function(sock) {
     socketClient.DeviceID = 0;
 
     socketList.push(socketClient);
-    console.log('add socket client connected:' + sock.remoteAddress + ': ' + sock.remotePort);
+    EWTRACE('add socket client connected:' + sock.remoteAddress + ': ' + sock.remotePort);
 
     // 为这个socket实例添加一个"data"事件处理函数
     sock.on('data', function(data) {
