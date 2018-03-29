@@ -739,11 +739,11 @@ module.exports = function(Xbox) {
         var boxId = parseInt(strboxId);
         if (boxId - 10 <= 0) {
             byteNumber += '00';
-            byteNumber += pad(boxId, 2);
+            byteNumber += pad(boxId, 2).toString(16).toUpperCase();
         } else {
             var page = parseInt((boxId - 10) / 40);
             byteNumber += pad(page + 1, 2);
-            byteNumber += pad((boxId - 10 - (page) * 40), 2);
+            byteNumber += pad((boxId - 10 - (page) * 40).toString(16).toUpperCase(), 2);
         }
         byteNumber += '11';
         return byteNumber;
@@ -802,7 +802,7 @@ module.exports = function(Xbox) {
             accepts: {
                 arg: 'GetTicket',
                 type: 'object',
-                description: '{"deviceId":"11111111","Data":"8A000111"}'
+                description: '{"deviceId":"11111111","Data":"1"}'
             },
             returns: {
                 arg: 'RegInfo',
