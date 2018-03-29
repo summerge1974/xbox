@@ -739,7 +739,7 @@ module.exports = function(Xbox) {
         var boxId = parseInt(strboxId);
         if (boxId - 10 <= 0) {
             byteNumber += '00';
-            byteNumber += pad(boxId, 2).toString(16).toUpperCase();
+            byteNumber += pad(boxId.toString(16).toUpperCase(), 2);
         } else {
             var page = parseInt((boxId - 10) / 40);
             byteNumber += pad(page + 1, 2);
