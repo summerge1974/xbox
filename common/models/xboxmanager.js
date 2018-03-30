@@ -523,4 +523,140 @@ module.exports = function(Xboxmanager) {
 
         }
     );
+
+
+    function Str2Bytes(str) {
+        var pos = 0;
+        var len = str.length;
+        if (len % 2 != 0) {
+            return null;
+        }
+        len /= 2;
+        var hexA = new Array();
+        for (var i = 0; i < len; i++) {
+            var s = str.substr(pos, 2);
+            var v = parseInt(s, 16);
+            hexA.push(v);
+            pos += 2;
+        }
+        return hexA;
+    }
+
+    function Str2Bytes10(str) {
+        var pos = 0;
+        var len = str.length;
+        if (len % 2 != 0) {
+            return null;
+        }
+        len /= 2;
+        var hexA = new Array();
+        for (var i = 0; i < len; i++) {
+            var s = str.substr(pos, 2);
+            var v = parseInt(s, 10);
+            hexA.push(v);
+            pos += 2;
+        }
+        return hexA;
+    }
+
+
+
+    var pad = function pad(num, n) {
+
+        var _detail = function(detail) {
+            var len = detail.num.toString().length;
+            if (len < detail.n) {
+                detail.num = '0' + detail.num;
+                _detail( detail )
+            }else{
+                return ;
+            }
+        }  
+
+        var detail = {};
+        detail.num = num;
+        detail.n = n;
+        _detail(detail);
+        return detail.num;
+
+    }
+
+    function convertNumber(strboxId) {
+
+        var byteNumber = '8A';
+        var boxId = parseInt(strboxId);
+        if (boxId - 10 <= 0) {
+            byteNumber += '00';
+            byteNumber += pad(boxId.toString(16).toUpperCase(), 2);
+        } else {
+            var page = parseInt((boxId - 10) / 40);
+            byteNumber += pad(page + 1, 2);
+            byteNumber += pad((boxId - 10 - (page) * 40).toString(16).toUpperCase(), 2);
+        }
+        byteNumber += '11';
+        return byteNumber;
+    }
+
+    Xboxmanager.openDoor = function(GetTicket, cb) {
+        EWTRACE("openDoor Begin");
+
+        var doorId = convertNumber(GetTicket.Data);
+        // var _tmp = 'NBES,ID=22222222,STATE=FIRST';
+        // var _obj = _tmp.substr(4);     
+        EWTRACE(doorId);
+
+        var socketList = app.get('m_socketList');
+
+        var find = _.find(socketList, function(item) {
+            return item.DeviceID == GetTicket.deviceId;
+        })
+        if (!_.isUndefined(find)) {
+            // 计算二进制BCC校验码，放入发送的最后一个字节中
+            var _tmp = Str2Bytes(doorId);
+
+            var _val = undefined;
+            for (var i in _tmp) {
+                if (_.isUndefined(_val)) {
+                    _val = _tmp[i];
+                } else {
+                    _val ^= _tmp[i];
+                }
+            }
+            _tmp.push(_val);
+            // 计算二进制BCC校验码，放入发送的最后一个字节中
+
+            var sendOver = find.userSocket.write(new Buffer(_tmp));
+            console.log('DeviceID:' + GetTicket.deviceId + ": Data：" + doorId + ", sendOver:" + sendOver);
+
+            cb(null, {
+                status: 1,
+                "result": ""
+            });
+        } else {
+            cb(null, {
+                status: 0,
+                "result": "device not find!"
+            });
+        }
+
+    };
+
+    Xboxmanager.remoteMethod(
+        'openDoor', {
+            http: {
+                verb: 'post'
+            },
+            description: '获得Ticket',
+            accepts: {
+                arg: 'GetTicket',
+                type: 'object',
+                description: '{"deviceId":"11111111","Data":"1"}'
+            },
+            returns: {
+                arg: 'RegInfo',
+                type: 'object',
+                root: true
+            }
+        }
+    );    
 };
