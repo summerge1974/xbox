@@ -659,4 +659,65 @@ module.exports = function(Xboxmanager) {
             }
         }
     );    
+
+
+    Xboxmanager.ValidateWechatEvent = function (req, res, cb) {
+
+        var token = 'zhiliankeji999';
+        var q = req.query;
+        var signature = q.signature; //微信加密签名  
+        var nonce = q.nonce; //随机数  
+        var timestamp = q.timestamp; //时间戳  
+        var echostr = q.echostr; //随机字符串  
+
+        EWTRACE('signature: ' + signature);
+        EWTRACE('echostr: ' + echostr);
+        EWTRACE('timestamp: ' + timestamp);
+        EWTRACE('nonce: ' + nonce);
+        var sha1 = require('sha1');
+
+        var str = [timestamp + '', nonce + '', token].sort().join('');
+        EWTRACE('加密前Str: ' + str);
+        EWTRACE('加密后Str: ' + sha1(str));
+
+        if (sha1(str) == signature) {
+
+            res.writeHeader(200, { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' })
+            res.write(new Buffer(echostr).toString("UTF-8"));
+            res.end();
+            EWTRACE('Send OK');
+
+        } else {
+            res.writeHeader(200, { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' })
+            res.write(new Buffer("false").toString("UTF-8"));
+            res.end();
+            EWTRACE('Send OK');
+        }
+    };
+
+    Xboxmanager.remoteMethod(
+        'ValidateWechatEvent',
+        {
+            http: { verb: 'get' },
+            description: '微信服务器验证',
+            accepts: [{
+                arg: 'req', type: 'object',
+                http: function (ctx) {
+                    return ctx.req;
+                },
+                description: '{"token":""}'
+            },
+            {
+                arg: 'res', type: 'object',
+                http: function (ctx) {
+                    return ctx.res;
+                },
+                description: '{"token":""}'
+            }
+            ],
+            returns: { arg: 'echostr', type: 'number', root: true }
+
+        }
+    );
+    
 };
