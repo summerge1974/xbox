@@ -10,7 +10,7 @@ module.exports = function(Xbox) {
 
         var OpenID = {};
         try {
-            if ( !_.isUndefine(token)){
+            if ( !_.isUndefined(token)){
                 OpenID = GetOpenIDFromToken(token);
                 delete OpenID.exp;
                 delete OpenID.iat;
