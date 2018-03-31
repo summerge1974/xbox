@@ -722,7 +722,7 @@ module.exports = function(Xboxmanager) {
     );
     
 
-    Patient.ValidateWechatEvent = function (req, res, cb) {
+    Xboxmanager.ValidateWechatEvent = function (req, res, cb) {
 
         EWTRACE("ValidateWechatEvent Begin")
         console.log(req.body.xml);
@@ -762,7 +762,7 @@ module.exports = function(Xboxmanager) {
 
     };
 
-    Patient.remoteMethod(
+    Xboxmanager.remoteMethod(
         'ValidateWechatEvent',
         {
             http: { verb: 'post' },
