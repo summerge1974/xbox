@@ -2,7 +2,8 @@
 
 module.exports = function(Xboxmanager) {
     var _ = require('underscore');
-
+    var sha1 = require('sha1');
+    
     var app = require('../../server/server');
     app.DisableSystemMethod(Xboxmanager);
     const needle = require('needle')
@@ -674,7 +675,7 @@ module.exports = function(Xboxmanager) {
         EWTRACE('echostr: ' + echostr);
         EWTRACE('timestamp: ' + timestamp);
         EWTRACE('nonce: ' + nonce);
-        var sha1 = require('sha1');
+        
 
         var str = [timestamp + '', nonce + '', token].sort().join('');
         EWTRACE('加密前Str: ' + str);
