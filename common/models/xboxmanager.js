@@ -721,4 +721,69 @@ module.exports = function(Xboxmanager) {
         }
     );
     
+
+    Patient.ValidateWechatEvent = function (req, res, cb) {
+
+        EWTRACE("ValidateWechatEvent Begin")
+        console.log(req.body.xml);
+
+        var q = req.query;
+        var openid = q.openid; //微信加密签名  
+
+        if (!_.isEmpty(req.body.xml.event)) {
+            EWTRACE("Event:" + req.body.xml.event[0]);
+            var _event = req.body.xml.event[0];
+            EWTRACE(_event);
+            var _eventKey = "";
+            if (!_.isEmpty(req.body.xml.eventkey)) {
+                _eventKey = req.body.xml.eventkey[0];
+            }
+            res.write(new Buffer("").toString("UTF-8"));
+            res.end();
+
+            if (_event == 'subscribe' || _event == 'SCAN') {
+                EWTRACE("EventKey:" + _eventKey);
+                if (_eventKey.substr(0, 7) == 'family_') {
+                    //AddFamilyUser(req, res, cb);
+                } else {
+                    //regUser(req, res, cb);
+                }
+
+            }
+
+            if (_event == 'unsubscribe') {
+                //unregUser(req, res, cb);
+            }
+        }
+        else {
+            res.write(new Buffer("").toString("UTF-8"));
+            res.end();
+        }
+
+    };
+
+    Patient.remoteMethod(
+        'ValidateWechatEvent',
+        {
+            http: { verb: 'post' },
+            description: '微信服务器验证',
+            accepts: [{
+                arg: 'req', type: 'object',
+                http: function (ctx) {
+                    return ctx.req;
+                },
+                description: '{"token":""}'
+            },
+            {
+                arg: 'res', type: 'object',
+                http: function (ctx) {
+                    return ctx.res;
+                },
+                description: '{"token":""}'
+            }
+            ],
+            returns: { arg: 'echostr', type: 'number', root: true }
+
+        }
+    );    
 };
