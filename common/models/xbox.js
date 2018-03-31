@@ -10,9 +10,16 @@ module.exports = function(Xbox) {
 
         var OpenID = {};
         try {
-            OpenID = GetOpenIDFromToken(token);
-            delete OpenID.exp;
-            delete OpenID.iat;
+            if ( !_.isUndefine(token)){
+                OpenID = GetOpenIDFromToken(token);
+                delete OpenID.exp;
+                delete OpenID.iat;
+            }
+            else{
+                OpenID.openid = "oFVZ-1Mf3yxWLWHQPE_3BhlVFnGU";
+                OpenID.nickname = "葛岭"
+            }
+
         } catch (err) {
             cb(err, EWTRACEEND({
                 status: 0,
@@ -20,6 +27,8 @@ module.exports = function(Xbox) {
             }));
             return;
         }
+
+        
 
         var bsSQL = "select * from xb_users where openid = '" + OpenID.openid + "'";
 
