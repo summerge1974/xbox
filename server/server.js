@@ -231,6 +231,10 @@ app.start = function (httpOnly) {
     console.log('This platform is ' + os.platform());
     var _port = app.get('port');
 
+    if (os.platform() == 'darwin') {
+        _port = 8443;
+    }    
+
     server.listen(_port, function () {
         //  server.listen(6800, function() {       
         var baseUrl = (httpOnly ? 'http://' : 'https://') + app.get('host') + ':' + _port;

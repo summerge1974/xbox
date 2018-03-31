@@ -10,9 +10,11 @@
   "dependencies": {
     "compression": "^1.0.3",
     "cors": "^2.5.2",
+    "cross-spawn": "^6.0.5",
     "dotenv": "^5.0.0",
     "express-xml-bodyparser": "^0.3.0",
     "helmet": "^1.3.0",
+    "isexe": "^2.0.0",
     "jsonwebtoken": "^8.1.1",
     "jwt-simple": "^0.5.1",
     "log4js": "^2.5.3",
@@ -24,6 +26,8 @@
     "needle": "^2.2.0",
     "serve-favicon": "^2.0.1",
     "sha1": "^1.1.1",
+    "shebang-regex": "^2.0.0",
+    "strip-eof": "^1.0.0",
     "strong-error-handler": "^1.0.1",
     "underscore": "^1.8.3"
   },
