@@ -720,7 +720,7 @@ module.exports = function(Xboxmanager) {
 
         }
     );
-    
+     
 
     Xboxmanager.ValidateWechatEvent = function (req, res, cb) {
 
