@@ -11,6 +11,7 @@ module.exports = function(Xbox) {
         var OpenID = {};
         try {
             if ( !_.isUndefined(token)){
+                EWTRACE("token:" + token);
                 OpenID = GetOpenIDFromToken(token);
                 delete OpenID.exp;
                 delete OpenID.iat;
