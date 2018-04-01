@@ -7,11 +7,11 @@ module.exports = function(Xbox) {
     const util = require('util');
     Xbox.login = function(token, cb) {
         EWTRACEBEGIN();
-
+        EWTRACE("token:" + token);
         var OpenID = {};
         try {
             if ( !_.isUndefined(token)){
-                EWTRACE("token:" + token);
+
                 OpenID = GetOpenIDFromToken(token);
                 delete OpenID.exp;
                 delete OpenID.iat;
