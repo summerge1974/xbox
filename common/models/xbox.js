@@ -43,7 +43,7 @@ module.exports = function(Xbox) {
             } else {
 
                 if (result.length == 0) {
-                    bsSQL = "insert into xb_users(openid,name,isVip) values('" + OpenID.openid + "','" + OpenID.nickname + "',0)";
+                    bsSQL = "insert into xb_users(openid,name,isVip) values('" + OpenID.openid + "','" + OpenID.nickname + "',1)";
                 } else {
                     bsSQL = "update xb_users set name = '" + OpenID.nickname + "' where openid = '" + OpenID.openid + "'";
                 }
@@ -168,7 +168,7 @@ module.exports = function(Xbox) {
         }
 
         var ps = [];
-        var bsSQL = "select * from xb_users where isVip = 1 and openid = '" + OpenID.openid + "'";
+        var bsSQL = "select * from xb_users where openid = '" + OpenID.openid + "'";
         var _userInfo = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
 
@@ -186,7 +186,7 @@ module.exports = function(Xbox) {
             if (_userInfo.Result.length == 0) {
                 cb(null, EWTRACEEND({
                     status: 0,
-                    "result": "非VIP客户不能借阅书籍，请尽快升级权限～"
+                    "result": "非关注公众号的客户不能借阅书籍，请尽快关注～"
                 }));
             } else {
 
