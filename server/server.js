@@ -233,7 +233,7 @@ app.start = function (httpOnly) {
     var _port = app.get('port');
 
     if (os.platform() == 'darwin') {
-        _port = 8443;
+        _port = 8080;
     }    
 
     server.listen(_port, function () {
