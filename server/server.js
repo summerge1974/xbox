@@ -1,5 +1,6 @@
 'use strict';
 var https = require('https');
+var http = require('http');
 var loopback = require('loopback');
 var boot = require('loopback-boot');
 var sslConfig = require('./ssl-config');
@@ -280,5 +281,5 @@ boot(app, __dirname, function(err) {
 
   // start the server if `$ node server.js`
   if (require.main === module)
-    app.start();
+    app.start(true);
 });
