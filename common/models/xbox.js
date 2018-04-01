@@ -5,8 +5,9 @@ module.exports = function(Xbox) {
     var app = require('../../server/server');
     app.DisableSystemMethod(Xbox);
     const util = require('util');
-    Xbox.login = function(token, cb) {
+    Xbox.login = function(userToken, cb) {
         EWTRACEBEGIN();
+        var token = userToken.token;
         EWTRACE("token:" + token);
         var OpenID = {};
         try {
@@ -64,13 +65,12 @@ module.exports = function(Xbox) {
             },
             description: '用户登录',
             accepts: {
-                arg: 'token',
-                type: 'string',
-                http: function(ctx) {
-                    var req = ctx.req;
-                    return req.headers.token;
+                arg: 'userToken',
+                type: 'object',
+                http: {
+                    source: 'body'
                 },
-                description: 'token'
+                description: '{token:12345678}'
             },
             returns: {
                 arg: 'echostr',
