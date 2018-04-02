@@ -398,55 +398,66 @@ module.exports = function(Xbox) {
                 return;
             }
 
-            bsSQL = "insert into xb_userbooks(openid,bookid,startDate) select '" + OpenID.openid + "' as openid, bookid, now() from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId + ";";
-            bsSQL += "delete from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
-
-            DoSQL(bsSQL, function(err) {
-                if (err) {
-                    cb(err, EWTRACEEND({
-                        status: 0,
-                        "result": "借阅书籍失败，请联系管理员"
-                    }));
-                } else {
-
-                    var doorId = convertNumber(bookId.cageId);   
-                    EWTRACE(doorId);
-            
-                    var socketList = app.get('m_socketList');
-            
-                    var find = _.find(socketList, function(item) {
-                        return item.DeviceID == bookId.deviceId;
-                    })
-                    if (!_.isUndefined(find)) {
-                        // 计算二进制BCC校验码，放入发送的最后一个字节中
-                        var _tmp = Str2Bytes(doorId);
-            
-                        var _val = undefined;
-                        for (var i in _tmp) {
-                            if (_.isUndefined(_val)) {
-                                _val = _tmp[i];
-                            } else {
-                                _val ^= _tmp[i];
-                            }
-                        }
-                        _tmp.push(_val);
-                        // 计算二进制BCC校验码，放入发送的最后一个字节中
-            
-                        var sendOver = find.userSocket.write(new Buffer(_tmp));
-                        console.log('DeviceID:' + bookId.deviceId + ": Data：" + doorId + ", sendOver:" + sendOver);
-                    
-                        cb(null, EWTRACEEND({
-                            status: 1,
-                            "result": "借阅成功"
-                        }));
+            var doorId = convertNumber(bookId.cageId);   
+            EWTRACE(doorId);
+    
+            var socketList = app.get('m_socketList');
+    
+            var find = _.find(socketList, function(item) {
+                return item.DeviceID == bookId.deviceId;
+            })
+            if (!_.isUndefined(find)) {
+                // 计算二进制BCC校验码，放入发送的最后一个字节中
+                var _tmp = Str2Bytes(doorId);
+    
+                var _val = undefined;
+                for (var i in _tmp) {
+                    if (_.isUndefined(_val)) {
+                        _val = _tmp[i];
                     } else {
-                        cb(null, {
-                            status: 0,
-                            "result": "device not find!"
-                        });
+                        _val ^= _tmp[i];
                     }
                 }
-            })
+                _tmp.push(_val);
+                // 计算二进制BCC校验码，放入发送的最后一个字节中
+    
+                var sendOver = find.userSocket.write(new Buffer(_tmp));
+                console.log('DeviceID:' + bookId.deviceId + ": Data：" + doorId + ", sendOver:" + sendOver);
+            
+                if ( sendOver ){
+                    bsSQL = "insert into xb_userbooks(openid,bookid,startDate) select '" + OpenID.openid + "' as openid, bookid, now() from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId + ";";
+                    bsSQL += "delete from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
+        
+                    DoSQL(bsSQL, function(err) {
+                        if (err) {
+                            cb(err, EWTRACEEND({
+                                status: 0,
+                                "result": "借阅书籍失败，请联系管理员"
+                            }));
+                        } else {
+                            cb(null, EWTRACEEND({
+                                status: 1,
+                                "result": "借阅成功"
+                            }));
+        
+                        }
+                    })
+                }
+                else{
+                    cb(null, {
+                        status: 0,
+                        "result": "借阅书籍失败，请联系管理员【send bad】"
+                    });
+                }
+
+            } else {
+                cb(null, {
+                    status: 0,
+                    "result": "device not find!"
+                });
+            }            
+
+
 
         }, function(err) {
             cb(err, EWTRACEEND({
