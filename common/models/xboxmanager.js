@@ -390,6 +390,43 @@ module.exports = function(Xboxmanager) {
             return;
         }
 
+        var doorId = deviceInfo.cageId;
+        EWTRACE(doorId);
+
+        var socketList = app.get('m_socketList');
+
+        var find = _.find(socketList, function(item) {
+            return item.DeviceID == deviceInfo.deviceId;
+        })
+        if (!_.isUndefined(find)) {
+            // 计算二进制BCC校验码，放入发送的最后一个字节中
+            var _tmp = Str2Bytes(doorId);
+
+            var _val = undefined;
+            for (var i in _tmp) {
+                if (_.isUndefined(_val)) {
+                    _val = _tmp[i];
+                } else {
+                    _val ^= _tmp[i];
+                }
+            }
+            _tmp.push(_val);
+            // 计算二进制BCC校验码，放入发送的最后一个字节中
+
+            var sendOver = find.userSocket.write(new Buffer(_tmp));
+            console.log('DeviceID:' + deviceInfo.deviceId + ": Data：" + doorId + ", sendOver:" + sendOver);
+
+            cb(null, {
+                status: 1,
+                "result": ""
+            });
+        } else {
+            cb(null, {
+                status: 0,
+                "result": "device not find!"
+            });
+        }
+
 
         cb(null, EWTRACEEND({
             status: 1,

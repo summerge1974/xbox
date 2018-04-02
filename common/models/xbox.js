@@ -408,10 +408,43 @@ module.exports = function(Xbox) {
                         "result": "借阅书籍失败，请联系管理员"
                     }));
                 } else {
-                    cb(null, EWTRACEEND({
-                        status: 1,
-                        "result": "借阅成功"
-                    }));
+
+                    var doorId = convertNumber(bookId.cageId);   
+                    EWTRACE(doorId);
+            
+                    var socketList = app.get('m_socketList');
+            
+                    var find = _.find(socketList, function(item) {
+                        return item.DeviceID == bookId.deviceId;
+                    })
+                    if (!_.isUndefined(find)) {
+                        // 计算二进制BCC校验码，放入发送的最后一个字节中
+                        var _tmp = Str2Bytes(doorId);
+            
+                        var _val = undefined;
+                        for (var i in _tmp) {
+                            if (_.isUndefined(_val)) {
+                                _val = _tmp[i];
+                            } else {
+                                _val ^= _tmp[i];
+                            }
+                        }
+                        _tmp.push(_val);
+                        // 计算二进制BCC校验码，放入发送的最后一个字节中
+            
+                        var sendOver = find.userSocket.write(new Buffer(_tmp));
+                        console.log('DeviceID:' + bookId.deviceId + ": Data：" + doorId + ", sendOver:" + sendOver);
+                    
+                        cb(null, EWTRACEEND({
+                            status: 1,
+                            "result": "借阅成功"
+                        }));
+                    } else {
+                        cb(null, {
+                            status: 0,
+                            "result": "device not find!"
+                        });
+                    }
                 }
             })
 
@@ -762,9 +795,7 @@ module.exports = function(Xbox) {
     Xbox.openDoor = function(GetTicket, cb) {
         EWTRACE("openDoor Begin");
 
-        var doorId = convertNumber(GetTicket.Data);
-        // var _tmp = 'NBES,ID=22222222,STATE=FIRST';
-        // var _obj = _tmp.substr(4);     
+        var doorId = convertNumber(GetTicket.Data);   
         EWTRACE(doorId);
 
         var socketList = app.get('m_socketList');
