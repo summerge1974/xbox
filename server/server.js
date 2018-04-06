@@ -11,6 +11,7 @@ var _ = require('underscore');
 var net = require('net');
 var HOST = '192.168.6.165';
 var PORT = 6801;
+var express = require('express');
 
 
 
@@ -283,3 +284,7 @@ boot(app, __dirname, function(err) {
   if (require.main === module)
     app.start(true);
 });
+
+
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'image')));
