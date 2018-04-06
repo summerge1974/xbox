@@ -291,7 +291,7 @@ module.exports = function(Xbox) {
             _booklist = _booklist.substr(0, _booklist.length - 1);
         }
 
-        var bsSQL = "select bookid as id, detailimages as images, title,author,press,price,now() as startDate, date_add(now(), interval leaseDays day) as endDate from xb_books where bookid in (" + _booklist + ")";
+        var bsSQL = "select bookid as id, detailimages as image, title,author,press,price,now() as startDate, date_add(now(), interval leaseDays day) as endDate from xb_books where bookid in (" + _booklist + ")";
 
         DoSQL(bsSQL, function(err, result) {
             if (err) {
@@ -320,7 +320,7 @@ module.exports = function(Xbox) {
                     var _bookdetail = {};
                     _bookdetail.id = item.id;
                     _bookdetail.title = item.title;
-                    _bookdetail.image = item.images;
+                    _bookdetail.image = item.image;
                     _bookdetail.press = item.press;
                     _bookdetail.price = item.price;
                     _bookdetail.author = item.author;
