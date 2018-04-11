@@ -323,7 +323,7 @@ module.exports = function(Xboxmanager) {
 
                 for (var i = 1; i <= 90; i++) {
                     var _filter = _.filter(result, function(fitem) {
-                        return fitem.cageid == i;
+                        return fitem.cageId == i;
                     })
 
                     var _detail = {};
