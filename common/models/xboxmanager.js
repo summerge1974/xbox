@@ -292,7 +292,7 @@ module.exports = function(Xboxmanager) {
         }
     );
 
-    Xboxmanager.getCageList = function(deviceInfo, token, cb) {
+    Xboxmanager.getCageList = function( token, cb) {
         EWTRACEBEGIN();
 
         var OpenID = {};
@@ -351,14 +351,7 @@ module.exports = function(Xboxmanager) {
                 verb: 'post'
             },
             description: '获取抽屉列表',
-            accepts: [{
-                arg: 'deviceInfo',
-                type: 'object',
-                http: {
-                    source: 'body'
-                },
-                description: '{id:12345678}'
-            }, {
+            accepts: {
                 arg: 'token',
                 type: 'string',
                 http: function(ctx) {
@@ -366,7 +359,7 @@ module.exports = function(Xboxmanager) {
                     return req.headers.token;
                 },
                 description: 'token'
-            }],
+            },
             returns: {
                 arg: 'echostr',
                 type: 'object',
@@ -493,55 +486,71 @@ module.exports = function(Xboxmanager) {
             return;
         }
 
-        var bsSQL = "select bookid as id, title,image,author from xb_books where barcode = '" + deviceInfo.isbn + "'";
-
+        var bsSQL = "select deviceId from xb_manager where openid = '" + OpenID.openid + "'";
         DoSQL(bsSQL, function(err, result) {
 
-            if (err) {
+
+            if ( result.length == 0 ){
                 cb(err, EWTRACEEND({
                     status: 0,
-                    "result": err.message
+                    "result": ""
                 }));
-            } else {
-                if (result.length == 0) {
-                    cb(null, EWTRACEEND({
+                return;                
+            }
+            var _deviceId = result[0].deviceId;
+            
+            bsSQL = "select bookid as id, title,image,author from xb_books where barcode = '" + deviceInfo.isbn + "'";
+
+            DoSQL(bsSQL, function(err, result) {
+    
+                if (err) {
+                    cb(err, EWTRACEEND({
                         status: 0,
-                        "result": "条形码未找到"
+                        "result": err.message
                     }));
                 } else {
-                    bsSQL = "insert into xb_devicebooks(deviceid,cageid,bookid) values('" + deviceInfo.deviceId + "','" + deviceInfo.cageId + "'," + result[0].id + ");";
-                    DoSQL(bsSQL, function(err) {
-                        if (err) {
-                            cb(err, EWTRACEEND({
-                                status: 0,
-                                "result": err.message
-                            }));
-                        } else {
-
-                            bsSQL = "select "+deviceInfo.cageId+" as cageId, b.bookId,b.title,b.image,b.author from xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid = '" + deviceInfo.deviceId + "' and cageid = " + deviceInfo.cageId;
-                            DoSQL(bsSQL,function(err, resultbox){
-                                if ( err ){
-                                    cb(err, EWTRACEEND({
-                                        status: 0,
-                                        "result": err.message
-                                    }));
-                                }else{
-                                    cb(null, EWTRACEEND({
-                                        status: 1,
-                                        "result": resultbox
-                                    }));
-                                }
-
-                            })
-
-                        }
-                    })
-
+                    if (result.length == 0) {
+                        cb(null, EWTRACEEND({
+                            status: 0,
+                            "result": "条形码未找到"
+                        }));
+                    } else {
+                        bsSQL = "insert into xb_devicebooks(deviceid,cageid,bookid) values('" + _deviceId + "','" + deviceInfo.cageId + "'," + result[0].id + ");";
+                        DoSQL(bsSQL, function(err) {
+                            if (err) {
+                                cb(err, EWTRACEEND({
+                                    status: 0,
+                                    "result": err.message
+                                }));
+                            } else {
+    
+                                bsSQL = "select "+deviceInfo.cageId+" as cageId, b.bookId,b.title,b.image,b.author from xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid = '" + _deviceId + "' and cageid = " + deviceInfo.cageId;
+                                DoSQL(bsSQL,function(err, resultbox){
+                                    if ( err ){
+                                        cb(err, EWTRACEEND({
+                                            status: 0,
+                                            "result": err.message
+                                        }));
+                                    }else{
+                                        cb(null, EWTRACEEND({
+                                            status: 1,
+                                            "result": resultbox
+                                        }));
+                                    }
+    
+                                })
+    
+                            }
+                        })
+    
+                    }
+    
+    
                 }
+            })            
+        });
 
-
-            }
-        })
+  
 
 
     }
@@ -557,7 +566,7 @@ module.exports = function(Xboxmanager) {
                 http: {
                     source: 'body'
                 },
-                description: '{devceId:12345678,cageId:1,isbn:9787887880697}'
+                description: '{cageId:1,isbn:9787887880697}'
             }, {
                 arg: 'token',
                 type: 'string',
