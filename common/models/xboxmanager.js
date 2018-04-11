@@ -319,6 +319,7 @@ module.exports = function(Xboxmanager) {
                 _result.totalCount = 90;
                 _result.emptyList = [];
                 _result.partialList = [];
+                _result.fullList = [];
 
                 for (var i = 1; i <= 90; i++) {
                     var _filter = _.filter(result, function(fitem) {
