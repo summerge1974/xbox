@@ -306,7 +306,7 @@ module.exports = function(Xboxmanager) {
             return;
         }
 
-        var bsSQL = "SELECT cageid,a.bookid as id,b.title,b.image,b.author FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid in (select deviceid from xb_manager where openid = '"+ OpenID.openid+"') order by cageid";
+        var bsSQL = "SELECT cageId,a.bookid as id,b.title,b.image,b.author FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid in (select deviceid from xb_manager where openid = '"+ OpenID.openid+"') order by cageid";
         DoSQL(bsSQL, function(err, result) {
             if (err) {
                 cb(err, EWTRACEEND({
