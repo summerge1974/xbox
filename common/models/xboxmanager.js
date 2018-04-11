@@ -14,7 +14,7 @@ module.exports = function(Xboxmanager) {
     Xboxmanager.login = function(userInfo, cb) {
         EWTRACEBEGIN();
 
-        var url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + process.env.wxProductAppID + "&secret=" + process.env.wxProductSecret + "&js_code=" + userInfo.code + "&grant_type=authorization_code";
+        var url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + process.env.wxProductProjectAppID + "&secret=" + process.env.wxProductProjectSecret + "&js_code=" + userInfo.code + "&grant_type=authorization_code";
         EWTRACE(url);
 
         needle.get(encodeURI(url), {}, function(err, resp) {
