@@ -332,8 +332,14 @@ module.exports = function(Xboxmanager) {
                     if (_.isEmpty(_filter)) {
                         _result.emptyList.push(_detail);
                     } else {
-                        _detail.details = _filter;
-                        _result.partialList.push(_detail);
+                        if ( _filter.length < 3 ){
+                            _detail.details = _filter;
+                            _result.partialList.push(_detail);
+                        }
+                        else{
+                            _detail.details = _filter;
+                            _result.fullList.push(_detail);
+                        }
                     }
                 }
 
