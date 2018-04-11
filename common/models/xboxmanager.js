@@ -338,8 +338,8 @@ module.exports = function(Xboxmanager) {
                             _result.partialList.push(_detail);
                         }
                         else{
-                            _detail.details = _filter;
-                            _result.fullList.push(_detail);
+                            //_detail.details = _filter;
+                            //_result.fullList.push(_detail);
                         }
                     }
                 }
