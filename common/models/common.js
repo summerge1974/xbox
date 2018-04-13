@@ -212,7 +212,7 @@ module.exports = function(Common) {
     wx_CreateOrders = function(fee) {
         return new Promise(function(resolve, reject) {
             var _fee = fee * 100;
-            var url = process.env.global_wxurl+"/createorders?appId="+process.env.wxAppID+"&fee="+_fee+"&notifyUrl=http://style.man-kang.com:8800/api/weChatEvents/wxnotify";
+            var url = process.env.global_wxurl+"/createorders?appId="+process.env.wxAppID+"&fee="+_fee+"&notifyUrl=https://w.zlian-teac.com/api/weChatEvents/wxnotify";
             console.log(url);
             needle.get(encodeURI(url), null, function(err, userInfo) {
 
