@@ -626,7 +626,7 @@ module.exports = function(Xbox) {
         var bsSQL = "select price as price,buyTime from xb_VIPPrice where id = " + memberShip.id;
 
         DoSQL(bsSQL, function(err, result) {
-            wx_CreateOrders(result[0].price).then(function(payout) {
+            wx_CreateOrders(result[0].price, OpenID.openid).then(function(payout) {
 
                 if (payout.return_code == 'FAIL') {
                     cb(null, {
