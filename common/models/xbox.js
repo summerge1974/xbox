@@ -623,7 +623,7 @@ module.exports = function(Xbox) {
             return;
         }
 
-        var bsSQL = "select price * 100 as price,buyTime from xb_VIPPrice where id = " + memberShip.id;
+        var bsSQL = "select price as price,buyTime from xb_VIPPrice where id = " + memberShip.id;
 
         DoSQL(bsSQL, function(err, result) {
             wx_CreateOrders(result[0].price).then(function(payout) {
