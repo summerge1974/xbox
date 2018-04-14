@@ -404,7 +404,7 @@ module.exports = function(Xboxmanager) {
             var _deviceId = result[0].deviceId;
 
 
-            var doorId = deviceInfo.cageId;
+            var doorId = deviceInfo.id;
             EWTRACE(doorId);
 
             var socketList = app.get('m_socketList');
