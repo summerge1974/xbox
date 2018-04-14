@@ -378,7 +378,7 @@ module.exports = function(Xboxmanager) {
 
     Xboxmanager.openCage = function(deviceInfo, token, cb) {
         EWTRACEBEGIN();
-
+        console.log(deviceInfo);
         var OpenID = {};
         try {
             OpenID = GetOpenIDFromToken(token);
