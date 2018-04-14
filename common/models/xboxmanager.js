@@ -440,12 +440,6 @@ module.exports = function(Xboxmanager) {
                     "result": "device not find!"
                 });
             }
-
-
-            cb(null, EWTRACEEND({
-                status: 1,
-                "result": ""
-            }));
         });
     }
     Xboxmanager.remoteMethod(
