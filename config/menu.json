@@ -1,0 +1,18 @@
+{
+  "menu": {
+    "button": [
+      {
+        "name": "借书",
+        "type": "view",
+        "key":"jieshu",
+        "url": "https://www.sina.com"
+      },
+      {
+        "name": "我的",
+        "type": "view",
+        "key":"wode",
+        "url": "https://www.sina.com"
+      }
+    ]
+  }
+}

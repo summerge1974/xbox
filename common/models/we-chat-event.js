@@ -4,23 +4,89 @@ module.exports = function(Wechatevent) {
     var app = require('../../server/server');
     app.DisableSystemMethod(Wechatevent);
     var _ = require('underscore');
+    const needle = require('needle')
+    function Request_WxToken() {
 
-    Wechatevent.test = function(cb){
-        EWTRACEBEGIN();
+        return new Promise(function (resolve, reject) {
 
-        EWTRACE("message Info")
+            require('dotenv').config({ path: './config/.env' });
+            var tokenUrl = 'http://w.zlian-tech.com/token?appId=' + process.env.wxAppID;
 
-        cb(null, EWTRACEEND({ code: 1, "message": "" }));
-    } 
+            needle.get(encodeURI(tokenUrl), null, function (err, resp) {
+                // you can pass params as a string or as an object.
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    if (!_.isUndefined(resp.headers.errcode)) {
+                        reject(new Error(resp.headers.errmsg));
+                    }
+                    else {
+                        resolve(resp);
+                    }
+                }
+            });
+        });
+    }
+
+    Wechatevent.CreateWXMenu = function(cb) {
+        EWTRACE("CreateWXMenu Begin");
+
+        Request_WxToken().then(function(resp) {
+            var menu = require('../../config/menu')
+            var data = menu.menu;
+            var url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" + resp.body.access_token;
+
+            needle.post(encodeURI(url), data, {
+                json: true
+            }, function(err, resp) {
+                // you can pass params as a string or as an object.
+                if (err) {
+                    //cb(err, { status: 0, "result": "" });
+                    EWTRACE(err.message);
+                    cb(err, {
+                        status: 1,
+                        "result": ""
+                    });
+                } else {
+                    cb(null, {
+                        status: 0,
+                        "result": resp.body
+                    });
+                }
+            });
+        }, function(err) {
+            cb(err, {
+                status: 1,
+                "result": ""
+            });
+        });
+        EWTRACE("CreateWXMenu End");
+    }
+
     Wechatevent.remoteMethod(
-        'test',
-        {
-            http: { verb: 'post' },
-            description: '微信服务器验证',
-            returns: { arg: 'echostr', type: 'number', root: true }
-
+        'CreateWXMenu', {
+            http: {
+                verb: 'post'
+            },
+            description: '创建微信菜单',
+            returns: {
+                arg: 'AddDoctor',
+                type: 'object',
+                root: true
+            }
         }
-    ); 
+    );
+
+    Wechatevent.remoteMethod(
+        'CreateWechatQRCode',
+        {
+            http: { verb: 'get' },
+            description: '生成公众号二维码',
+            accepts: { arg: 'iccid', type: 'string', description: '898602b11816c0389700' },
+            returns: { arg: 'p', type: 'object', root: true }
+        }
+    );    
 
     Wechatevent.wxnotify = function (a, cb) {
         console.log("wxnotify");
