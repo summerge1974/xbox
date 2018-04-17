@@ -13,7 +13,7 @@ module.exports = function(Wechatevent) {
         require('dotenv').config({
             path: './config/.env'
         });
-        var url = 'http://w.zlian-tech.com/createmenu?appId=' + process.env.wxAppID;
+        var url = process.env.global_wxurl + '/createmenu?appId=' + process.env.wxAppID;
         needle.post(encodeURI(url), menu.menu, {
             json: true
         }, function(err, resp) {
@@ -26,7 +26,7 @@ module.exports = function(Wechatevent) {
                     "result": ""
                 });
             } else {
-                console.log(resp);
+                console.log(resp.body);
                 cb(null, {
                     status: 0,
                     "result": resp.body
