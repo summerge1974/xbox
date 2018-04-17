@@ -3,6 +3,7 @@
 module.exports = function(Wechatevent) {
     var app = require('../../server/server');
     app.DisableSystemMethod(Wechatevent);
+    var _ = require('underscore');
 
     Wechatevent.test = function(cb){
         EWTRACEBEGIN();
@@ -74,67 +75,8 @@ module.exports = function(Wechatevent) {
         var q = req.query;
         var openid = q.openid; //微信加密签名  
 
-        if (!_.isEmpty(req.body.xml.event)) {
-            EWTRACE("Event:" + req.body.xml.event[0]);
-            var _event = req.body.xml.event[0];
-            EWTRACE(_event);
-            var _eventKey = "";
-            if (!_.isEmpty(req.body.xml.eventkey)) {
-                _eventKey = req.body.xml.eventkey[0];
-            }
-            res.write(new Buffer("").toString("UTF-8"));
-            res.end();
-
-            if (_event == 'subscribe' || _event == 'SCAN') {
-                EWTRACE("EventKey:" + _eventKey);
-                if (_eventKey.substr(0, 7) == 'family_') {
-                    AddFamilyUser(req, res, cb);
-                } else {
-                    regUser(req, res, cb);
-                }
-
-            }
-
-            if (_event == 'unsubscribe') {
-                unregUser(req, res, cb);
-            }
-
-            if (_event == 'CLICK') {
-                if (_eventKey == "Create_Token") {
-                    GetWXNickName(req.body.xml.fromusername[0]).then(function (result) {
-                        GetTokenFromOpenID(result).then(function (token) {
-                            EWTRACE(token);
-                        })
-                    }, function (err) {
-
-                    });
-                }
-
-
-                if (_eventKey == 'SOS_Notify') {
-                    EWTRACE("call WXClick_SOS");
-                    WXClick_SOS_NotifyLBS(req, res, cb);
-                }
-
-                if (_eventKey == 'firstUser' || _eventKey == 'PWV') {
-                    WXClick_Notify_firstUser(req, res, _eventKey);
-                }
-            }
-            if (_event == 'location_select') {
-                if (_eventKey == 'SOS_Notify') {
-                    EWTRACE("call WXClick_SOS");
-                    WXClick_SOS(req, res, cb);
-                }
-            }
-
-            if (_event == 'LOCATION') {
-                UpdateUserLBS(req.body.xml);
-            }
-        }
-        else {
-            res.write(new Buffer("").toString("UTF-8"));
-            res.end();
-        }
+        res.write(new Buffer("").toString("UTF-8"));
+        res.end();
 
     };
 
