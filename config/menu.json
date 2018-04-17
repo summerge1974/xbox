@@ -5,13 +5,13 @@
         "name": "借书",
         "type": "view",
         "key":"jieshu",
-        "url": "https://www.sina.com"
+        "url": "http://w.zlian-tech.com/wechat_userinfo?appId=wx13eaa53cf5121bce&bu=http%3A%2F%2Fbox.zlian-tech.com%2F%23%2F%3Fredirect%3D%252Fdashboard"
       },
       {
         "name": "我的",
         "type": "view",
         "key":"wode",
-        "url": "https://www.sina.com"
+        "url": "http://w.zlian-tech.com/wechat_userinfo?appId=wx13eaa53cf5121bce&bu=http%3A%2F%2Fbox.zlian-tech.com%2F%23%2F%3Fredirect%3D%252Fmy"
       }
     ]
   }
