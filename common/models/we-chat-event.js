@@ -71,7 +71,8 @@ module.exports = function(Wechatevent) {
 
         EWTRACE("ValidateWechatEvent Begin")
         console.log(req.body.xml);
-
+        conosle.log(req.queyr);
+        
         var q = req.query;
         var openid = q.openid; //微信加密签名  
 
