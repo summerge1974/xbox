@@ -5,61 +5,33 @@ module.exports = function(Wechatevent) {
     app.DisableSystemMethod(Wechatevent);
     var _ = require('underscore');
     const needle = require('needle')
-    function Request_WxToken() {
-
-        return new Promise(function (resolve, reject) {
-
-            require('dotenv').config({ path: './config/.env' });
-            var tokenUrl = 'http://w.zlian-tech.com/token?appId=' + process.env.wxAppID;
-
-            needle.get(encodeURI(tokenUrl), null, function (err, resp) {
-                // you can pass params as a string or as an object.
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    if (!_.isUndefined(resp.headers.errcode)) {
-                        reject(new Error(resp.headers.errmsg));
-                    }
-                    else {
-                        resolve(resp);
-                    }
-                }
-            });
-        });
-    }
 
     Wechatevent.CreateWXMenu = function(cb) {
         EWTRACE("CreateWXMenu Begin");
 
-        Request_WxToken().then(function(resp) {
-            var menu = require('../../config/menu')
-            var data = menu.menu;
-            var url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" + resp.body.access_token;
-
-            needle.post(encodeURI(url), data, {
-                json: true
-            }, function(err, resp) {
-                // you can pass params as a string or as an object.
-                if (err) {
-                    //cb(err, { status: 0, "result": "" });
-                    EWTRACE(err.message);
-                    cb(err, {
-                        status: 1,
-                        "result": ""
-                    });
-                } else {
-                    cb(null, {
-                        status: 0,
-                        "result": resp.body
-                    });
-                }
-            });
-        }, function(err) {
-            cb(err, {
-                status: 1,
-                "result": ""
-            });
+        var menu = require('../../config/menu');
+        require('dotenv').config({
+            path: './config/.env'
+        });
+        var url = 'http://w.zlian-tech.com/createmenu?appId=' + process.env.wxAppID;
+        needle.post(encodeURI(url), menu.menu, {
+            json: true
+        }, function(err, resp) {
+            // you can pass params as a string or as an object.
+            if (err) {
+                //cb(err, { status: 0, "result": "" });
+                EWTRACE(err.message);
+                cb(err, {
+                    status: 1,
+                    "result": ""
+                });
+            } else {
+                console.log(resp);
+                cb(null, {
+                    status: 0,
+                    "result": resp.body
+                });
+            }
         });
         EWTRACE("CreateWXMenu End");
     }
@@ -79,16 +51,25 @@ module.exports = function(Wechatevent) {
     );
 
     Wechatevent.remoteMethod(
-        'CreateWechatQRCode',
-        {
-            http: { verb: 'get' },
+        'CreateWechatQRCode', {
+            http: {
+                verb: 'get'
+            },
             description: '生成公众号二维码',
-            accepts: { arg: 'iccid', type: 'string', description: '898602b11816c0389700' },
-            returns: { arg: 'p', type: 'object', root: true }
+            accepts: {
+                arg: 'iccid',
+                type: 'string',
+                description: '898602b11816c0389700'
+            },
+            returns: {
+                arg: 'p',
+                type: 'object',
+                root: true
+            }
         }
-    );    
+    );
 
-    Wechatevent.wxnotify = function (a, cb) {
+    Wechatevent.wxnotify = function(a, cb) {
         console.log("wxnotify");
         var param = a.xml;
         param.nstr = a.xml.out_trade_no[0];
@@ -102,10 +83,10 @@ module.exports = function(Wechatevent) {
 
             var bsSQL = "update xb_userOrders set paystatus = 'commit' where payorderid = '" + _orderid + "'";
 
-            DoSQL(bsSQL).then(function () {
+            DoSQL(bsSQL).then(function() {
                 var backXml = '<xml xmlns="eshine"><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[]]></return_msg></xml>';
                 cb(null, backXml, 'text/xml; charset=utf-8');
-            }, function (err) {
+            }, function(err) {
                 var backXml = '<xml xmlns="eshine"><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[]]></return_msg></xml>';
                 cb(null, backXml, 'text/xml; charset=utf-8');
             })
@@ -117,23 +98,34 @@ module.exports = function(Wechatevent) {
     //var xmlparser = require('express-xml-bodyparser');
     //app.use(xmlparser());
     Wechatevent.remoteMethod(
-        'wxnotify',
-        {
-            http: { verb: 'post' },
+        'wxnotify', {
+            http: {
+                verb: 'post'
+            },
             description: '微信支付通知(bm_Company)',
-            accepts: [
-                {
-                    arg: 'a',
-                    type: 'xml',
-                    description: "wx-pay-back",
-                    http: { source: 'body' }
+            accepts: [{
+                arg: 'a',
+                type: 'xml',
+                description: "wx-pay-back",
+                http: {
+                    source: 'body'
                 }
-            ],
-            returns: [{ arg: 'body', type: 'file', root: true }, { arg: 'Content-Type', type: 'string', http: { target: 'header' } }]
+            }],
+            returns: [{
+                arg: 'body',
+                type: 'file',
+                root: true
+            }, {
+                arg: 'Content-Type',
+                type: 'string',
+                http: {
+                    target: 'header'
+                }
+            }]
         }
-    );    
+    );
 
-    Wechatevent.ValidateWechatEvent = function (req, res, cb) {
+    Wechatevent.ValidateWechatEvent = function(req, res, cb) {
 
         EWTRACE("ValidateWechatEvent Begin")
         console.log(req.body.xml);
@@ -148,27 +140,34 @@ module.exports = function(Wechatevent) {
     };
 
     Wechatevent.remoteMethod(
-        'ValidateWechatEvent',
-        {
-            http: { verb: 'post' },
+        'ValidateWechatEvent', {
+            http: {
+                verb: 'post'
+            },
             description: '微信服务器验证',
             accepts: [{
-                arg: 'req', type: 'object',
-                http: function (ctx) {
-                    return ctx.req;
+                    arg: 'req',
+                    type: 'object',
+                    http: function(ctx) {
+                        return ctx.req;
+                    },
+                    description: '{"token":""}'
                 },
-                description: '{"token":""}'
-            },
-            {
-                arg: 'res', type: 'object',
-                http: function (ctx) {
-                    return ctx.res;
-                },
-                description: '{"token":""}'
-            }
+                {
+                    arg: 'res',
+                    type: 'object',
+                    http: function(ctx) {
+                        return ctx.res;
+                    },
+                    description: '{"token":""}'
+                }
             ],
-            returns: { arg: 'echostr', type: 'number', root: true }
+            returns: {
+                arg: 'echostr',
+                type: 'number',
+                root: true
+            }
 
         }
-    );    
+    );
 };
