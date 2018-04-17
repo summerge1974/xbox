@@ -697,7 +697,7 @@ module.exports = function(Xboxmanager) {
         } else {
             cb(null, {
                 status: 0,
-                "result": "device not find!"
+                "result": "阅读柜无法连接，请找管理员协助，谢谢!"
             });
         }
 
