@@ -149,6 +149,8 @@ module.exports = function(Xbox) {
     Xbox.getProducts = function(deviceInfo, token, cb) {
         EWTRACEBEGIN();
 
+        EWTRACE(deviceInfo)
+
         var OpenID = {};
         try {
             OpenID = GetOpenIDFromToken(token);

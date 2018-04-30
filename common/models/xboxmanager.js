@@ -3,7 +3,7 @@
 module.exports = function(Xboxmanager) {
     var _ = require('underscore');
     var sha1 = require('sha1');
-    
+
     var app = require('../../server/server');
     app.DisableSystemMethod(Xboxmanager);
     const needle = require('needle')
@@ -19,7 +19,7 @@ module.exports = function(Xboxmanager) {
 
         needle.get(encodeURI(url), {}, function(err, resp) {
 
-            
+
             if (err) {
 
                 cb(err, EWTRACEEND({
@@ -29,8 +29,7 @@ module.exports = function(Xboxmanager) {
             } else {
 
                 var userInfo = JSON.parse(resp.body);
-                if ( !_.isUndefined(userInfo.errcode ))
-                {
+                if (!_.isUndefined(userInfo.errcode)) {
                     cb(null, EWTRACEEND({
                         status: 0,
                         "token": userInfo.errmsg
@@ -166,7 +165,7 @@ module.exports = function(Xboxmanager) {
                     "result": ""
                 }));
             } else {
-                if ( result.length == 0 ){
+                if (result.length == 0) {
                     cb(null, EWTRACEEND({
                         status: 0,
                         "result": "用户未借书或已还清~"
@@ -293,7 +292,7 @@ module.exports = function(Xboxmanager) {
         }
     );
 
-    Xboxmanager.getCageList = function( token, cb) {
+    Xboxmanager.getCageList = function(token, cb) {
         EWTRACEBEGIN();
 
         var OpenID = {};
@@ -307,51 +306,61 @@ module.exports = function(Xboxmanager) {
             return;
         }
 
-        var bsSQL = "SELECT cageId,a.bookid as id,b.title,b.image,b.author FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid in (select deviceid from xb_manager where openid = '"+ OpenID.openid+"') order by cageid";
-        DoSQL(bsSQL, function(err, result) {
+        var bsSQL = "SELECT cagecount FROM xb_devices from deviceid in (select deviceid from xb_manager where openid = '" + OpenID.openid + "') order by cageid";
+        DoSQL(bsSQL, function(err, result1) {
             if (err) {
                 cb(err, EWTRACEEND({
                     status: 0,
                     "result": ""
                 }));
             } else {
-                var _result = {};
 
-                _result.totalCount = 50;
-                _result.emptyList = [];
-                _result.partialList = [];
-                _result.fullList = [];
 
-                for (var i = 1; i <= 50; i++) {
-                    var _filter = _.filter(result, function(fitem) {
-                        return fitem.cageId == i;
-                    })
-
-                    var _detail = {};
-                    _detail.id = i;
-                    _detail.details = [];
-
-                    if (_.isEmpty(_filter)) {
-                        _result.emptyList.push(_detail);
+                bsSQL = "SELECT cageId,a.bookid as id,b.title,b.image,b.author FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid in (select deviceid from xb_manager where openid = '" + OpenID.openid + "') order by cageid";
+                DoSQL(bsSQL, function(err, result) {
+                    if (err) {
+                        cb(err, EWTRACEEND({
+                            status: 0,
+                            "result": ""
+                        }));
                     } else {
-                        if ( _filter.length < 3 ){
-                            _detail.details = _filter;
-                            _result.partialList.push(_detail);
-                        }
-                        else{
-                            //_detail.details = _filter;
-                            //_result.fullList.push(_detail);
-                        }
-                    }
-                }
+                        var _result = {};
 
-                cb(null, EWTRACEEND({
-                    status: 1,
-                    "result": _result
-                }));
+                        _result.totalCount = result1[0].cagecount;
+                        _result.emptyList = [];
+                        _result.partialList = [];
+                        _result.fullList = [];
+
+                        for (var i = 1; i <= result1[0].cagecount; i++) {
+                            var _filter = _.filter(result, function(fitem) {
+                                return fitem.cageId == i;
+                            })
+
+                            var _detail = {};
+                            _detail.id = i;
+                            _detail.details = [];
+
+                            if (_.isEmpty(_filter)) {
+                                _result.emptyList.push(_detail);
+                            } else {
+                                if (_filter.length < 3) {
+                                    _detail.details = _filter;
+                                    _result.partialList.push(_detail);
+                                } else {
+                                    //_detail.details = _filter;
+                                    //_result.fullList.push(_detail);
+                                }
+                            }
+                        }
+
+                        cb(null, EWTRACEEND({
+                            status: 1,
+                            "result": _result
+                        }));
+                    }
+                });
             }
         });
-
     }
     Xboxmanager.remoteMethod(
         'getCageList', {
@@ -395,12 +404,12 @@ module.exports = function(Xboxmanager) {
         DoSQL(bsSQL, function(err, result) {
 
 
-            if ( result.length == 0 ){
+            if (result.length == 0) {
                 cb(err, EWTRACEEND({
                     status: 0,
                     "result": ""
                 }));
-                return;                
+                return;
             }
             var _deviceId = result[0].deviceId;
 
@@ -492,19 +501,19 @@ module.exports = function(Xboxmanager) {
         DoSQL(bsSQL, function(err, result) {
 
 
-            if ( result.length == 0 ){
+            if (result.length == 0) {
                 cb(err, EWTRACEEND({
                     status: 0,
                     "result": ""
                 }));
-                return;                
+                return;
             }
             var _deviceId = result[0].deviceId;
-            
+
             bsSQL = "select bookid as id, title,image,author from xb_books where barcode = '" + deviceInfo.isbn + "'";
 
             DoSQL(bsSQL, function(err, result) {
-    
+
                 if (err) {
                     cb(err, EWTRACEEND({
                         status: 0,
@@ -525,34 +534,34 @@ module.exports = function(Xboxmanager) {
                                     "result": err.message
                                 }));
                             } else {
-    
-                                bsSQL = "select "+deviceInfo.cageId+" as cageId, b.bookId,b.title,b.image,b.author from xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid = '" + _deviceId + "' and cageid = " + deviceInfo.cageId;
-                                DoSQL(bsSQL,function(err, resultbox){
-                                    if ( err ){
+
+                                bsSQL = "select " + deviceInfo.cageId + " as cageId, b.bookId,b.title,b.image,b.author from xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid = '" + _deviceId + "' and cageid = " + deviceInfo.cageId;
+                                DoSQL(bsSQL, function(err, resultbox) {
+                                    if (err) {
                                         cb(err, EWTRACEEND({
                                             status: 0,
                                             "result": err.message
                                         }));
-                                    }else{
+                                    } else {
                                         cb(null, EWTRACEEND({
                                             status: 1,
                                             "result": resultbox
                                         }));
                                     }
-    
+
                                 })
-    
+
                             }
                         })
-    
+
                     }
-    
-    
+
+
                 }
-            })            
+            })
         });
 
-  
+
 
 
     }
@@ -630,11 +639,11 @@ module.exports = function(Xboxmanager) {
             var len = detail.num.toString().length;
             if (len < detail.n) {
                 detail.num = '0' + detail.num;
-                _detail( detail )
-            }else{
-                return ;
+                _detail(detail)
+            } else {
+                return;
             }
-        }  
+        }
 
         var detail = {};
         detail.num = num;
@@ -721,10 +730,10 @@ module.exports = function(Xboxmanager) {
                 root: true
             }
         }
-    );    
+    );
 
 
-    Xboxmanager.ValidateWechatEvent = function (req, res, cb) {
+    Xboxmanager.ValidateWechatEvent = function(req, res, cb) {
 
         var token = 'zhiliankeji999';
         var q = req.query;
@@ -737,7 +746,7 @@ module.exports = function(Xboxmanager) {
         EWTRACE('echostr: ' + echostr);
         EWTRACE('timestamp: ' + timestamp);
         EWTRACE('nonce: ' + nonce);
-        
+
 
         var str = [timestamp + '', nonce + '', token].sort().join('');
         EWTRACE('加密前Str: ' + str);
@@ -745,13 +754,17 @@ module.exports = function(Xboxmanager) {
 
         if (sha1(str) == signature) {
 
-            res.writeHeader(200, { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' })
+            res.writeHeader(200, {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            })
             res.write(new Buffer(echostr).toString("UTF-8"));
             res.end();
             EWTRACE('Send OK');
 
         } else {
-            res.writeHeader(200, { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' })
+            res.writeHeader(200, {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            })
             res.write(new Buffer("false").toString("UTF-8"));
             res.end();
             EWTRACE('Send OK');
@@ -759,32 +772,39 @@ module.exports = function(Xboxmanager) {
     };
 
     Xboxmanager.remoteMethod(
-        'ValidateWechatEvent',
-        {
-            http: { verb: 'get' },
+        'ValidateWechatEvent', {
+            http: {
+                verb: 'get'
+            },
             description: '微信服务器验证',
             accepts: [{
-                arg: 'req', type: 'object',
-                http: function (ctx) {
-                    return ctx.req;
+                    arg: 'req',
+                    type: 'object',
+                    http: function(ctx) {
+                        return ctx.req;
+                    },
+                    description: '{"token":""}'
                 },
-                description: '{"token":""}'
-            },
-            {
-                arg: 'res', type: 'object',
-                http: function (ctx) {
-                    return ctx.res;
-                },
-                description: '{"token":""}'
-            }
+                {
+                    arg: 'res',
+                    type: 'object',
+                    http: function(ctx) {
+                        return ctx.res;
+                    },
+                    description: '{"token":""}'
+                }
             ],
-            returns: { arg: 'echostr', type: 'number', root: true }
+            returns: {
+                arg: 'echostr',
+                type: 'number',
+                root: true
+            }
 
         }
     );
-     
 
-    Xboxmanager.ValidateWechatEvent = function (req, res, cb) {
+
+    Xboxmanager.ValidateWechatEvent = function(req, res, cb) {
 
         EWTRACE("ValidateWechatEvent Begin")
         console.log(req.body.xml);
@@ -816,8 +836,7 @@ module.exports = function(Xboxmanager) {
             if (_event == 'unsubscribe') {
                 //unregUser(req, res, cb);
             }
-        }
-        else {
+        } else {
             res.write(new Buffer("").toString("UTF-8"));
             res.end();
         }
@@ -825,27 +844,34 @@ module.exports = function(Xboxmanager) {
     };
 
     Xboxmanager.remoteMethod(
-        'ValidateWechatEvent',
-        {
-            http: { verb: 'post' },
+        'ValidateWechatEvent', {
+            http: {
+                verb: 'post'
+            },
             description: '微信服务器验证',
             accepts: [{
-                arg: 'req', type: 'object',
-                http: function (ctx) {
-                    return ctx.req;
+                    arg: 'req',
+                    type: 'object',
+                    http: function(ctx) {
+                        return ctx.req;
+                    },
+                    description: '{"token":""}'
                 },
-                description: '{"token":""}'
-            },
-            {
-                arg: 'res', type: 'object',
-                http: function (ctx) {
-                    return ctx.res;
-                },
-                description: '{"token":""}'
-            }
+                {
+                    arg: 'res',
+                    type: 'object',
+                    http: function(ctx) {
+                        return ctx.res;
+                    },
+                    description: '{"token":""}'
+                }
             ],
-            returns: { arg: 'echostr', type: 'number', root: true }
+            returns: {
+                arg: 'echostr',
+                type: 'number',
+                root: true
+            }
 
         }
-    );    
+    );
 };
