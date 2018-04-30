@@ -429,7 +429,7 @@ module.exports = function(Xboxmanager) {
                 // 计算二进制BCC校验码，放入发送的最后一个字节中
 
                 var sendOver = find.userSocket.write(new Buffer(_tmp));
-                console.log('DeviceID:' + _deviceId + ": Data：" + doorId + ", sendOver:" + sendOver);
+                console.log('DeviceID:' + _deviceId + ": Data：" + _tmp + ", sendOver:" + sendOver);
 
                 cb(null, {
                     status: 1,
