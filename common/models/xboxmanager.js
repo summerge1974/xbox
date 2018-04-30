@@ -317,12 +317,12 @@ module.exports = function(Xboxmanager) {
             } else {
                 var _result = {};
 
-                _result.totalCount = 90;
+                _result.totalCount = 50;
                 _result.emptyList = [];
                 _result.partialList = [];
                 _result.fullList = [];
 
-                for (var i = 1; i <= 90; i++) {
+                for (var i = 1; i <= 50; i++) {
                     var _filter = _.filter(result, function(fitem) {
                         return fitem.cageId == i;
                     })
