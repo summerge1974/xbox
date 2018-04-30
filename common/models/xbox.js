@@ -422,7 +422,7 @@ module.exports = function(Xbox) {
                 // 计算二进制BCC校验码，放入发送的最后一个字节中
     
                 var sendOver = find.userSocket.write(new Buffer(_tmp));
-                console.log('DeviceID:' + bookId.deviceId + ": Data：" + doorId + ", sendOver:" + sendOver);
+                console.log('DeviceID:' + bookId.deviceId + ": DoorID：" + doorId +", Data:"+ _tmp + ", sendOver:" + sendOver);
             
                 if ( sendOver ){
                     bsSQL = "insert into xb_userbooks(openid,bookid,startDate) select '" + OpenID.openid + "' as openid, bookid, now() from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId + ";";
