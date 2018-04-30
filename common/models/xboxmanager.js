@@ -415,7 +415,7 @@ module.exports = function(Xboxmanager) {
             })
             if (!_.isUndefined(find)) {
                 // 计算二进制BCC校验码，放入发送的最后一个字节中
-                var _tmp = Str2Bytes(doorId);
+                var _tmp = Str2Bytes(doorId.toString());
 
                 var _val = undefined;
                 for (var i in _tmp) {
