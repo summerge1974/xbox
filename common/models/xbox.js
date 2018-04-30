@@ -178,7 +178,7 @@ module.exports = function(Xbox) {
         var _booksList = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _booksList));
 
-        bsSQL = "select a.categorieId as id, a.categoriename as name from xb_categories a where a.categorieId in (select categorieId from xb_devicebooks where deviceID like '%" + _deviceId + "%') ";
+        bsSQL = "select a.categorieId as id, a.categoriename as name from xb_categories a where a.categorieId in (select categorieId from xb_devicebooks where deviceID like '" + _deviceId + "') ";
         var _bookcategories = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _bookcategories));
 
