@@ -306,7 +306,7 @@ module.exports = function(Xboxmanager) {
             return;
         }
 
-        var bsSQL = "SELECT cagecount FROM xb_devices from deviceid in (select deviceid from xb_manager where openid = '" + OpenID.openid + "') order by cageid";
+        var bsSQL = "SELECT cagecount FROM xb_devices where deviceid in (select deviceid from xb_manager where openid = '" + OpenID.openid + "') order by cageid";
         DoSQL(bsSQL, function(err, result1) {
             if (err) {
                 cb(err, EWTRACEEND({
