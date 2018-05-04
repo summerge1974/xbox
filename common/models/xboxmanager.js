@@ -39,7 +39,8 @@ module.exports = function(Xboxmanager) {
                 console.log(userInfo);
                 getWeChatToken(JSON.parse(resp.body)).then(function(resultToken) {
                     EWTRACE(resp.body);
-                    var bsSQL = "select * from xb_manager where openid = '" + userInfo.openid + "'";
+                    //var bsSQL = "select * from xb_manager where openid = '" + userInfo.openid + "'";
+                    var bsSQL = "select a.*, b.name as kindergartenName from xb_manager a, xb_devices b where a.openid = '" + userInfo.openid + "' and a.deviceId = b.deviceId";
                     DoSQL(bsSQL, function(err, result) {
 
                         if (err) {
@@ -48,11 +49,15 @@ module.exports = function(Xboxmanager) {
                                 "token": err.message
                             }));
                         } else {
+                            resultToken.kindergartenName = '';
                             if (result.length == 0) {
                                 bsSQL = "insert into xb_manager(openid,deviceid) values('" + userInfo.openid + "','11111111')";
                                 DoSQL(bsSQL);
                             }
-
+                            else{
+                                resultToken.kindergartenName = result[0].kindergartenName;
+                            }
+                            
                             cb(null, EWTRACEEND({
                                 status: 1,
                                 "token": resultToken
