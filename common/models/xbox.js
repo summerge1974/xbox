@@ -183,7 +183,7 @@ module.exports = function(Xbox) {
         ps.push(ExecuteSyncSQLResult(bsSQL, _bookcategories));
 
 
-        bsSQL = "select name from xb_devices where deviceID = '" + _deviceId + "') ";
+        bsSQL = "select name from xb_devices where deviceID = '" + _deviceId ;
         var _deviceName = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _deviceName));        
 
