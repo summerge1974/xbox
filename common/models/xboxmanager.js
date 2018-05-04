@@ -60,7 +60,7 @@ module.exports = function(Xboxmanager) {
                             
                             cb(null, EWTRACEEND({
                                 status: 1,
-                                kindergartenName : kindergartenName,
+                                "kindergartenName" : kindergartenName,
                                 "token": resultToken
                             }));
                         }
