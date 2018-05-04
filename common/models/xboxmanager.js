@@ -59,10 +59,11 @@ module.exports = function(Xboxmanager) {
                             }
                             var outResult = {};
                             outResult.kindergartenName = kindergartenName;
-                            outResult.token = resultToken;
+                            //outResult.token = resultToken;
                             cb(null, EWTRACEEND({
                                 status: 1,
-                                "result" : outResult
+                                "result" : outResult,
+                                "token": resultToken
                             }));
                         }
                     })
