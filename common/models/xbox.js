@@ -183,6 +183,10 @@ module.exports = function(Xbox) {
         ps.push(ExecuteSyncSQLResult(bsSQL, _bookcategories));
 
 
+        bsSQL = "select name from xb_devices where deviceID = '" + _deviceId + "') ";
+        var _deviceName = {};
+        ps.push(ExecuteSyncSQLResult(bsSQL, _deviceName));        
+
         Promise.all(ps).then(function() {
 
             if (_userInfo.Result.length == 0) {
@@ -193,6 +197,11 @@ module.exports = function(Xbox) {
             } else {
 
                 var _result = {};
+                _result.kindergartenName = '';
+                if ( _deviceName.Result.length > 0 ){
+                    _result.kindergartenName = _deviceName.Result[0].name;
+                }
+                
                 _result.categories = _bookcategories.Result;
 
                 _result.books = [];
