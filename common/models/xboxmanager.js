@@ -49,17 +49,18 @@ module.exports = function(Xboxmanager) {
                                 "token": err.message
                             }));
                         } else {
-                            resultToken.kindergartenName = '';
+                            var kindergartenName = '';
                             if (result.length == 0) {
                                 bsSQL = "insert into xb_manager(openid,deviceid) values('" + userInfo.openid + "','11111111')";
                                 DoSQL(bsSQL);
                             }
                             else{
-                                resultToken.kindergartenName = result[0].kindergartenName;
+                                kindergartenName = result[0].kindergartenName;
                             }
                             
                             cb(null, EWTRACEEND({
                                 status: 1,
+                                kindergartenName : kindergartenName,
                                 "token": resultToken
                             }));
                         }
