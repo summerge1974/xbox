@@ -157,7 +157,11 @@ net.createServer(function(sock) {
 
             sock.write(data);
             var RecvData = Bytes2Str10(data);
-            console.log(RecvData);
+
+            if ( RecvData.indexOf(',') > 0 ){
+                var _tmp = RecvData.split(',');
+                RecvData = _tmp[1].substr(3, _tmp[1].length - 3);
+            }
             var iIndex = containsByID(socketList, RecvData, sock);
             if ( ! _.isUndefined(iIndex) ){
                 socketList[iIndex].userSocket.destroy();
