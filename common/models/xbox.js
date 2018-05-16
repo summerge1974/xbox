@@ -43,7 +43,7 @@ module.exports = function(Xbox) {
             } else {
 
                 if (result.length == 0) {
-                    bsSQL = "insert into xb_users(openid,name,isVip) values('" + OpenID.openid + "','" + OpenID.nickname + "',1)";
+                    bsSQL = "insert into xb_users(openid,name,isVip) values('" + OpenID.openid + "','" + OpenID.nickname + "',0)";
                 } else {
                     bsSQL = "update xb_users set name = '" + OpenID.nickname + "' where openid = '" + OpenID.openid + "'";
                 }
