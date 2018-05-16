@@ -392,7 +392,19 @@ module.exports = function(Xbox) {
         var _userBookInfo = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _userBookInfo));
 
+        bsSQL = "select * from xb_users where openid = '" + OpenID.openid + "' and isvip = 1";
+        var _userInfo = {};
+        ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
+
         Promise.all(ps).then(function() {
+
+            if ( _userInfo.Result.length == 0 ){
+                cb(null, EWTRACEEND({
+                    status: 0,
+                    "result": "您还不是VIP会员，请缴费后再次借阅"
+                }));
+                return;                
+            }
 
             if (_deviceBookInfo.Result.length == 0) {
                 cb(null, EWTRACEEND({
