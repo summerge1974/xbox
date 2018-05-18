@@ -543,7 +543,7 @@ module.exports = function(Xboxmanager) {
                                 }));
                             } else {
 
-                                bsSQL = "select " + deviceInfo.cageId + " as cageId, b.bookId,b.title,b.image,b.author from xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid = '" + _deviceId + "' and cageid = " + deviceInfo.cageId+ ' and bookid = '+result[0].id ;
+                                bsSQL = "select " + deviceInfo.cageId + " as cageId, b.bookId,b.title,b.image,b.author from xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid = '" + _deviceId + "' and cageid = " + deviceInfo.cageId+ ' and a.bookid = '+result[0].id ;
                                 DoSQL(bsSQL, function(err, resultbox) {
                                     if (err) {
                                         cb(err, EWTRACEEND({
