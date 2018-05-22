@@ -1,0 +1,18 @@
+{
+  "menu": {
+    "button": [
+      {
+        "name": "借书",
+        "type": "view",
+        "key":"jieshu",
+        "url": "http://w.zlian-tech.com/wechat_userinfo?appId=wx89084bb951178075&bu=http%3A%2F%2Fbox.readingbox.cn%2F%23%2F%3Fredirect%3D%252Fdashboard"
+      },
+      {
+        "name": "我的",
+        "type": "view",
+        "key":"wode",
+        "url": "http://w.zlian-tech.com/wechat_userinfo?appId=wx89084bb951178075&bu=http%3A%2F%2Fbox.readingbox.cn%2F%23%2F%3Fredirect%3D%252Fmy"
+      }     
+    ]
+  }
+}
