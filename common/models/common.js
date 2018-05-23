@@ -211,7 +211,7 @@ module.exports = function(Common) {
 
     wx_CreateOrders = function(fee, openid) {
         return new Promise(function(resolve, reject) {
-            var _fee = fee * 100;
+            var _fee = 1; //fee * 100;
             var url = process.env.global_wxurl+"/createorders?appId="+process.env.wxAppID+"&inside_no=0&fee="+_fee+"&notifyUrl="+process.env.pay_notify+"&openid="+openid;
             console.log(url);
             needle.get(encodeURI(url), null, function(err, userInfo) {

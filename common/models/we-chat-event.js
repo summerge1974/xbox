@@ -80,9 +80,9 @@ module.exports = function(Wechatevent) {
         if (return_code == "SUCCESS" && result_code == "SUCCESS") {
 
             var _orderid = a.xml.out_trade_no[0];
-
+            var _openid = a.xml.openid[0];
             var bsSQL = "update xb_userOrders set paystatus = 'commit' where payorderid = '" + _orderid + "';";
-            bsSQL += "update xb_users set isvip = 1,expiredate = date_add(now(),interval 1 year) where openid in (select openid from xb_userorders where  payorderid = '" + _orderid + "')";
+            bsSQL += "update xb_users set isvip = 1,expiredate = date_add(now(),interval 1 year) where openid = '" + _openid + "')";
 
             DoSQL(bsSQL, function(err, result) {
                 if (err) {
