@@ -84,13 +84,15 @@ module.exports = function(Wechatevent) {
             var bsSQL = "update xb_userOrders set paystatus = 'commit' where payorderid = '" + _orderid + "';";
             bsSQL += "update xb_users set isvip = 1,expiredate = date_add(now(),interval 1 year) where openid in (select openid from xb_userorders where  payorderid = '" + _orderid + "')";
 
-            DoSQL(bsSQL).then(function() {
-                var backXml = '<xml xmlns="eshine"><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[]]></return_msg></xml>';
-                cb(null, backXml, 'text/xml; charset=utf-8');
-            }, function(err) {
-                var backXml = '<xml xmlns="eshine"><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[]]></return_msg></xml>';
-                cb(null, backXml, 'text/xml; charset=utf-8');
-            })
+            DoSQL(bsSQL, function(err, result) {
+                if (err) {
+                    var backXml = '<xml xmlns="eshine"><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[]]></return_msg></xml>';
+                    cb(null, backXml, 'text/xml; charset=utf-8');
+                } else {
+                    var backXml = '<xml xmlns="eshine"><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[]]></return_msg></xml>';
+                    cb(null, backXml, 'text/xml; charset=utf-8');
+                }
+            });
         }
 
     }
