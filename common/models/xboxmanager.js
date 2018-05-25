@@ -51,7 +51,11 @@ module.exports = function(Xboxmanager) {
                         } else {
                             var kindergartenName = '';
                             if (result.length == 0) {
-                                bsSQL = "insert into xb_manager(openid,deviceid) values('" + userInfo.openid + "','11111111')";
+                                var userName = userInfo.nickName;
+                                if ( _.isUndefined(userName)){
+                                    userName = '';
+                                }
+                                bsSQL = "insert into xb_manager(openid,username,deviceid,addtime) values('" + userInfo.openid + "','"+userName+"','',now())";
                                 DoSQL(bsSQL);
                             }
                             else{
