@@ -1,6 +1,11 @@
 var log4js = require('log4js');
 var needle = require('needle')
-require('dotenv').config({ path: './config/.env' });
+
+if ( process.env.NODE_ENV == 'maomaochong'){
+    require('dotenv').config({ path: './config/.env-maomaochong' });
+}else{
+    require('dotenv').config({ path: './config/.env' });
+}
 
 module.exports = function(Common) {
 

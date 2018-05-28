@@ -716,6 +716,7 @@ module.exports = function(Xbox) {
 
     Xbox.getTestToken = function(cb) {
         EWTRACEBEGIN();
+        console.log(process.env);
 
         var OpenID = {
             openid: 'oFVZ-1Mf3yxWLWHQPE_3BhlVFnGU',
