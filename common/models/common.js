@@ -1,6 +1,7 @@
 var log4js = require('log4js');
 var needle = require('needle')
 
+console.log(process.env.NODE_ENV);
 if ( process.env.NODE_ENV == 'maomaochong'){
     require('dotenv').config({ path: './config/.env-maomaochong' });
 }else{
