@@ -1,8 +1,8 @@
 var path = require('path'),
 fs = require("fs");
 
-//sudo vi ~/.bash_profile
-//export NODE_ENV=maomaochong 
+//NODE_ENV=test pm2 start server/server.js --name 'xbox'
+// 新服务器pm2 启动时，需要制定环境变量
 console.log(process.env.NODE_ENV);
 
 if ( process.env.NODE_ENV == 'maomaochong'){
