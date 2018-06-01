@@ -55,7 +55,7 @@ module.exports = function(Xboxmanager) {
                                 if ( _.isUndefined(userName)){
                                     userName = '';
                                 }
-                                bsSQL = "insert into xb_manager(openid,username,deviceid,addtime) values('" + userInfo.openid + "','"+userName+"','',now())";
+                                bsSQL = "insert into xb_manager(openid,username,deviceid,addtime) values('" + userInfo.openid + "','"+userName+"','11111111',now())";
                                 DoSQL(bsSQL);
                             }
                             else{
