@@ -8,7 +8,44 @@ if ( process.env.NODE_ENV == 'maomaochong'){
     require('dotenv').config({ path: './config/.env' });
 }
 
+var schedule = require("node-schedule"); //定时任务  
+var rule = new schedule.RecurrenceRule();
+
+
+
 module.exports = function(Common) {
+
+    initTimer = function() {
+        EWTRACE("init timer");
+        rule.second = 1;
+        var job = schedule.scheduleJob(rule, function() {
+            TimerCall();
+        });
+        //return job;
+    };
+    initTimer();
+    
+    TimerCall = function() {
+        if (timerevent.app.datasources == undefined) {
+            return;
+        }
+    
+        var currentTime = new Date();
+        //require('dotenv').config({ path: './config/.env' });
+        var _curTime = currentTime.toTimeString().substr(0, 2);
+        if ( _curTime == 23 && currentTime.format("mm") == 55){
+    
+            var bsSQL = "update xb_devicebooks set schtime = null, schuser = '' where schtime <  date_add(now(), interval -1 day)";
+    
+            DoSQL(bsSQL, function (err){
+                if (err) {
+                    EWTRACE(err.message);
+                }
+            })
+        }   
+    
+    }
+
 
     DoSQL = function (SQL, resultFun, Connect) {
         EWTRACE(SQL);
@@ -230,5 +267,27 @@ module.exports = function(Common) {
                 }
             });
         });
+    }  
+    
+    SendSMS = function(mobile, context, type) {
+
+        _SendSMS = function(resolve, reject) {
+            var smsService = Common.app.dataSources.luosimaoRest;
+            if (type == 1) {
+                smsService = Common.app.dataSources.luosimaoRegCheck;
+            }
+            smsService.send(mobile, context, 30, function(err, response, context) {
+                if (err) {
+                    reject(err);
+                }
+
+                if (response[0].error) {
+                    reject(new Error(response[0].msg));
+                } else {
+                    resolve(null);
+                }
+            });
+        };
+        return new Promise(_SendSMS);
     }    
 };

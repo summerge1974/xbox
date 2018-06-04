@@ -11,13 +11,12 @@ module.exports = function(Xbox) {
         EWTRACE("token:" + token);
         var OpenID = {};
         try {
-            if ( !_.isUndefined(token)){
+            if (!_.isUndefined(token)) {
 
                 OpenID = GetOpenIDFromToken(token);
                 delete OpenID.exp;
                 delete OpenID.iat;
-            }
-            else{
+            } else {
                 OpenID.openid = "oFVZ-1Mf3yxWLWHQPE_3BhlVFnGU";
                 OpenID.nickname = "葛岭"
             }
@@ -30,7 +29,7 @@ module.exports = function(Xbox) {
             return;
         }
 
-        
+
 
         var bsSQL = "select * from xb_users where openid = '" + OpenID.openid + "'";
 
@@ -82,6 +81,141 @@ module.exports = function(Xbox) {
     );
 
 
+    Xbox.checkRegNum = function(token, userInfo, cb) {
+
+        var OpenID = {};
+        try {
+            OpenID = GetOpenIDFromToken(token);
+            delete OpenID.exp;
+            delete OpenID.iat;
+        } catch (err) {
+            cb(err, EWTRACEEND({
+                status: 0,
+                "result": ""
+            }));
+            return;
+        }
+
+        var bsSQL = "select from xb_regcode where mobile='" + userInfo.mobile + "' and regcode = " + userInfo.regcode + ";";
+
+        DoSQL(bsSQL, function(err, result) {
+
+            if (result.length > 0) {
+
+                bsSQL = "update xb_users set mobile = " +  userInfo.mobile + " where openid = '"+ OpenID.openid +"'";
+                DoSQL(bsSQL, function (err ){
+                    if ( err ){
+                        cb(err, EWTRACEEND({
+                            status: 0,
+                            "result": ""
+                        }));
+                    }else{
+                        cb(null, EWTRACEEND({
+                            status: 1,
+                            "result": ""
+                        }));
+                    }
+                })
+
+            } else {
+                cb(null, EWTRACEEND({
+                    status: 0,
+                    "result": "验证码错误，请确认后重新输入"
+                }));
+            }
+        });
+    }
+
+    Xbox.remoteMethod(
+        'checkRegNum', {
+            http: {
+                verb: 'post'
+            },
+            description: '发送验证短信',
+            accepts: [{
+                arg: 'token',
+                type: 'string',
+                http: function(ctx) {
+                    var req = ctx.req;
+                    return req.headers.token;
+                },
+                description: 'token'
+            }, {
+                arg: 'userInfo',
+                type: 'object',
+                http: {
+                    source: 'body'
+                },
+                description: '{"mobile":18958064659,"regcode":""}'
+            }],
+            returns: {
+                arg: 'echostr',
+                type: 'object',
+                root: true
+            }
+
+        }
+    );
+
+    Xbox.sendCheckNum = function(userInfo, cb) {
+
+        var Random = {
+            Result: 0
+        };
+        var bsSQL = "select usp_NewRandomNumber(4) as Random_Number";
+
+        var pv = ExecuteSyncSQLResult(bsSQL, Random);
+        pv.then(function() {
+
+            bsSQL = "delete from xb_regcode where mobile='" + userInfo.mobile + "';";
+            bsSQL += "insert into xb_regcode(mobile, regcode) values('" + userInfo.mobile + "','" + Random.Result[0].Random_Number + "')";
+
+            var smspv = SendSMS(userInfo.mobile, Random.Result[0].Random_Number);
+            smspv.then(function() {
+                DoSQL(bsSQL, function(err) {
+                    if (err) {
+                        cb(err, EWTRACEEND({
+                            status: 0,
+                            "result": err.message
+                        }));
+                    } else {
+                        cb(null, EWTRACEEND({
+                            status: 1,
+                            "result": ""
+                        }));
+                    }
+                })
+            }, function(err) {
+                cb(err, EWTRACEEND({
+                    status: 0,
+                    "result": ""
+                }));
+            })
+        });
+    }
+    Xbox.remoteMethod(
+        'sendCheckNum', {
+            http: {
+                verb: 'post'
+            },
+            description: '发送验证短信',
+            accepts: {
+                arg: 'userInfo',
+                type: 'object',
+                http: {
+                    source: 'body'
+                },
+                description: '{mobile:18958064659}'
+            },
+            returns: {
+                arg: 'echostr',
+                type: 'object',
+                root: true
+            }
+
+        }
+    );
+
     Xbox.getUserInfo = function(token, cb) {
         EWTRACEBEGIN();
 
@@ -98,7 +232,7 @@ module.exports = function(Xbox) {
             return;
         }
 
-        var bsSQL = "select openid as id,name,isVip,expireDate from xb_users where openid = '" + OpenID.openid + "'";
+        var bsSQL = "select openid as id,name,isVip,expireDate,mobile from xb_users where openid = '" + OpenID.openid + "'";
 
         DoSQL(bsSQL, function(err, result) {
             if (err) {
@@ -185,7 +319,7 @@ module.exports = function(Xbox) {
 
         bsSQL = "select name from xb_devices where deviceID = '" + _deviceId + "' ";
         var _deviceName = {};
-        ps.push(ExecuteSyncSQLResult(bsSQL, _deviceName));        
+        ps.push(ExecuteSyncSQLResult(bsSQL, _deviceName));
 
         Promise.all(ps).then(function() {
 
@@ -198,52 +332,52 @@ module.exports = function(Xbox) {
 
                 var _result = {};
                 _result.kindergartenName = '';
-                if ( _deviceName.Result.length > 0 ){
+                if (_deviceName.Result.length > 0) {
                     _result.kindergartenName = _deviceName.Result[0].name;
                 }
-                
+
                 _result.categories = _bookcategories.Result;
 
                 _result.books = [];
 
                 _booksList.Result.forEach(function(item) {
 
-
                     var find = _.find(_result.books, function(fitem) {
 
                         return fitem.deviceId == item.deviceId && fitem.cageId == item.cageId;
                     })
 
-                    if (_.isUndefined(find)) {
+                    if ( item.schuser == '' || item.schuser == _userInfo.Result[0].mobile){
+                        if (_.isUndefined(find)) {
 
-                        var _book = {};
-                        _book.deviceId = item.deviceId;
-                        _book.categoryId = item.categoryId;
-                        _book.cageId = item.cageId;
-                        _book.lease = {};
-                        _book.lease.startDate = item.startDate;
-                        _book.lease.endDate = item.endDate;
-
-                        _book.details = [];
-
-                        var _bookdetail = {};
-                        _bookdetail.id = item.bookId;
-                        _bookdetail.title = item.title;
-                        _bookdetail.image = item.image;
-
-                        _book.details.push(_bookdetail);
-
-                        _result.books.push(_book);
-                    } else {
-                        var _bookdetail = {};
-                        _bookdetail.id = item.bookId;
-                        _bookdetail.title = item.title;
-                        _bookdetail.image = item.image;
-
-                        find.details.push(_bookdetail);
-
+                            var _book = {};
+                            _book.deviceId = item.deviceId;
+                            _book.categoryId = item.categoryId;
+                            _book.cageId = item.cageId;
+                            _book.lease = {};
+                            _book.lease.startDate = item.startDate;
+                            _book.lease.endDate = item.endDate;
+    
+                            _book.details = [];
+    
+                            var _bookdetail = {};
+                            _bookdetail.id = item.bookId;
+                            _bookdetail.title = item.title;
+                            _bookdetail.image = item.image;
+    
+                            _book.details.push(_bookdetail);
+    
+                            _result.books.push(_book);
+                        } else {
+                            var _bookdetail = {};
+                            _bookdetail.id = item.bookId;
+                            _bookdetail.title = item.title;
+                            _bookdetail.image = item.image;
+    
+                            find.details.push(_bookdetail);
+    
+                        }
                     }
-
                 })
 
                 cb(null, EWTRACEEND({
@@ -368,6 +502,226 @@ module.exports = function(Xbox) {
         }
     );
 
+    Xbox.scheduleBook = function(bookId, token, cb ){
+        EWTRACEBEGIN();
+
+        var OpenID = {};
+        try {
+            OpenID = GetOpenIDFromToken(token);
+            delete OpenID.exp;
+            delete OpenID.iat;
+        } catch (err) {
+            cb(err, EWTRACEEND({
+                status: 0,
+                "result": ""
+            }));
+            return;
+        }
+        
+        var ps = [];
+        var bsSQL = "select * from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId + " and schuser <> ''";
+        var _deviceBookInfo = {};
+        ps.push(ExecuteSyncSQLResult(bsSQL, _deviceBookInfo));
+
+        bsSQL = "select * from xb_users where openid = '" + OpenID.openid + "' and isvip = 1 and mobile <> ''";
+        var _userInfo = {};
+        ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
+
+        Promise.all(ps).then(function() {
+
+            if ( _userInfo.Result.length == 0 ){
+                cb(null, EWTRACEEND({
+                    status: 0,
+                    "result": "当前会员非缴费会员，请升级为VIP"
+                }));
+                return;                 
+            }
+            if ( _deviceBookInfo.Result.length == 0){
+
+                cb(null, EWTRACEEND({
+                    status: 0,
+                    "result": "该书籍已经被其他会员借走"
+                }));
+                return;                
+            }
+
+            bsSQL = "update xb_devicebooks set schtime = null, schuser = '' where schuser = '"+_userInfo.Result[0].mobile+"';update xb_devicebooks set schtime = now(), schuser = '"+_userInfo.Result[0].mobile+"' where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId + " and schuser = ''";
+
+            DoSQL( bsSQL, function (err ){
+
+                if ( err ){
+                    cb(err, EWTRACEEND({
+                        status: 0,
+                        "result": ""
+                    }));
+                    return;   
+                }else{
+                    cb(null, EWTRACEEND({
+                        status: 1,
+                        "result": "预约成功，请在明天24时前拿取书籍"
+                    }));
+                    return;   
+                }
+            })
+        },function(err){
+            cb(err, EWTRACEEND({
+                status: 0,
+                "result": ""
+            }));
+            return;  
+        });     
+    }
+    Xbox.remoteMethod(
+        'scheduleBook', {
+            http: {
+                verb: 'post'
+            },
+            description: '数据预约',
+            accepts: [{
+                arg: 'bookId',
+                type: 'object',
+                http: {
+                    source: 'body'
+                },
+                description: '{id:1,deviceId:12345678,cageId:1}'
+            }, {
+                arg: 'token',
+                type: 'string',
+                http: function(ctx) {
+                    var req = ctx.req;
+                    return req.headers.token;
+                },
+                description: 'token'
+            }],
+            returns: {
+                arg: 'echostr',
+                type: 'object',
+                root: true
+            }
+
+        }
+    );
+
+    Xbox.scheduleBorrowBook = function(userInfo, cb ){
+
+        var ps = [];
+        var bsSQL = "select cageId,deviceId from xb_devicebooks where schuser = " + userInfo.mobile ;
+        var _deviceBookInfo = {};
+        ps.push(ExecuteSyncSQLResult(bsSQL, _deviceBookInfo));
+
+        bsSQL = "select * from xb_users where mobile = '" + userInfo.mobile + "' and isvip = 1";
+        var _userInfo = {};
+        ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
+
+        Promise.all(ps).then(function() {
+
+            if (_userInfo.Result.length == 0) {
+                cb(null, EWTRACEEND({
+                    status: 0,
+                    "result": "您还不是VIP会员，请缴费后再次借阅"
+                }));
+                return;
+            }
+
+            if (_deviceBookInfo.Result.length == 0) {
+                cb(null, EWTRACEEND({
+                    status: 0,
+                    "result": "书籍信息未找到，请联系管理员"
+                }));
+                return;
+            }
+
+            var doorId = convertNumber(_deviceBookInfo.Result[0].cageId);
+            EWTRACE(doorId);
+
+            var socketList = app.get('m_socketList');
+
+            var find = _.find(socketList, function(item) {
+                return item.DeviceID == _deviceBookInfo.Result[0].deviceId;
+            })
+            if (!_.isUndefined(find)) {
+                // 计算二进制BCC校验码，放入发送的最后一个字节中
+                var _tmp = Str2Bytes(doorId);
+
+                var _val = undefined;
+                for (var i in _tmp) {
+                    if (_.isUndefined(_val)) {
+                        _val = _tmp[i];
+                    } else {
+                        _val ^= _tmp[i];
+                    }
+                }
+                _tmp.push(_val);
+                // 计算二进制BCC校验码，放入发送的最后一个字节中
+
+                var sendOver = find.userSocket.write(new Buffer(_tmp));
+                console.log('DeviceID:' + bookId.deviceId + ": DoorID：" + doorId + ", Data:" + _tmp + ", sendOver:" + sendOver);
+
+                if (sendOver) {
+                    bsSQL = "insert into xb_userbooks(openid,bookid,startDate) select '" + OpenID.openid + "' as openid, bookid, now() from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId + ";";
+                    bsSQL += "delete from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
+
+                    DoSQL(bsSQL, function(err) {
+                        if (err) {
+                            cb(err, EWTRACEEND({
+                                status: 0,
+                                "result": "借阅书籍失败，请联系管理员"
+                            }));
+                        } else {
+                            cb(null, EWTRACEEND({
+                                status: 1,
+                                "result": "借阅成功"
+                            }));
+
+                        }
+                    })
+                } else {
+                    cb(null, {
+                        status: 0,
+                        "result": "借阅书籍失败，请联系管理员【send bad】"
+                    });
+                }
+
+            } else {
+                cb(null, {
+                    status: 0,
+                    "result": "device not find!"
+                });
+            }
+
+
+
+        }, function(err) {
+            cb(err, EWTRACEEND({
+                status: 0,
+                "result": ""
+            }));
+        });
+    }
+
+    Xbox.remoteMethod(
+        'scheduleBorrowBook', {
+            http: {
+                verb: 'post'
+            },
+            description: '获取书籍详细信息',
+            accepts: {
+                arg: 'bookId',
+                type: 'object',
+                http: {
+                    source: 'body'
+                },
+                description: '{"mobile":18958064659}'
+            },
+            returns: {
+                arg: 'echostr',
+                type: 'object',
+                root: true
+            }
+
+        }
+    );    
+
     Xbox.borrowBook = function(bookId, token, cb) {
         EWTRACEBEGIN();
 
@@ -384,7 +738,7 @@ module.exports = function(Xbox) {
             return;
         }
         var ps = [];
-        var bsSQL = "select * from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
+        var bsSQL = "select * from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId ;
         var _deviceBookInfo = {};
         ps.push(ExecuteSyncSQLResult(bsSQL, _deviceBookInfo));
 
@@ -398,12 +752,12 @@ module.exports = function(Xbox) {
 
         Promise.all(ps).then(function() {
 
-            if ( _userInfo.Result.length == 0 ){
+            if (_userInfo.Result.length == 0) {
                 cb(null, EWTRACEEND({
                     status: 0,
                     "result": "您还不是VIP会员，请缴费后再次借阅"
                 }));
-                return;                
+                return;
             }
 
             if (_deviceBookInfo.Result.length == 0) {
@@ -421,18 +775,18 @@ module.exports = function(Xbox) {
                 return;
             }
 
-            var doorId = convertNumber(bookId.cageId);   
+            var doorId = convertNumber(bookId.cageId);
             EWTRACE(doorId);
-    
+
             var socketList = app.get('m_socketList');
-    
+
             var find = _.find(socketList, function(item) {
                 return item.DeviceID == bookId.deviceId;
             })
             if (!_.isUndefined(find)) {
                 // 计算二进制BCC校验码，放入发送的最后一个字节中
                 var _tmp = Str2Bytes(doorId);
-    
+
                 var _val = undefined;
                 for (var i in _tmp) {
                     if (_.isUndefined(_val)) {
@@ -443,14 +797,14 @@ module.exports = function(Xbox) {
                 }
                 _tmp.push(_val);
                 // 计算二进制BCC校验码，放入发送的最后一个字节中
-    
+
                 var sendOver = find.userSocket.write(new Buffer(_tmp));
-                console.log('DeviceID:' + bookId.deviceId + ": DoorID：" + doorId +", Data:"+ _tmp + ", sendOver:" + sendOver);
-            
-                if ( sendOver ){
+                console.log('DeviceID:' + bookId.deviceId + ": DoorID：" + doorId + ", Data:" + _tmp + ", sendOver:" + sendOver);
+
+                if (sendOver) {
                     bsSQL = "insert into xb_userbooks(openid,bookid,startDate) select '" + OpenID.openid + "' as openid, bookid, now() from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId + ";";
                     bsSQL += "delete from xb_devicebooks where deviceId=" + bookId.deviceId + " and cageId = " + bookId.cageId;
-        
+
                     DoSQL(bsSQL, function(err) {
                         if (err) {
                             cb(err, EWTRACEEND({
@@ -462,11 +816,10 @@ module.exports = function(Xbox) {
                                 status: 1,
                                 "result": "借阅成功"
                             }));
-        
+
                         }
                     })
-                }
-                else{
+                } else {
                     cb(null, {
                         status: 0,
                         "result": "借阅书籍失败，请联系管理员【send bad】"
@@ -478,7 +831,7 @@ module.exports = function(Xbox) {
                     status: 0,
                     "result": "device not find!"
                 });
-            }            
+            }
 
 
 
@@ -797,11 +1150,11 @@ module.exports = function(Xbox) {
             var len = detail.num.toString().length;
             if (len < detail.n) {
                 detail.num = '0' + detail.num;
-                _detail( detail )
-            }else{
-                return ;
+                _detail(detail)
+            } else {
+                return;
             }
-        }  
+        }
 
         var detail = {};
         detail.num = num;
@@ -830,7 +1183,7 @@ module.exports = function(Xbox) {
     Xbox.openDoor = function(GetTicket, cb) {
         EWTRACE("openDoor Begin");
 
-        var doorId = convertNumber(GetTicket.Data);   
+        var doorId = convertNumber(GetTicket.Data);
         EWTRACE(doorId);
 
         var socketList = app.get('m_socketList');

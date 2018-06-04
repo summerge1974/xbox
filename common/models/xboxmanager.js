@@ -242,6 +242,155 @@ module.exports = function(Xboxmanager) {
         }
     );
 
+    Xboxmanager.getUserReturn2 = function(userInfo, token, cb) {
+        EWTRACEBEGIN();
+
+        var OpenID = {};
+        try {
+            OpenID = GetOpenIDFromToken(token);
+        } catch (err) {
+            cb(err, EWTRACEEND({
+                status: 0,
+                "result": ""
+            }));
+            return;
+        }
+
+        var bsSQL = "select openid,a.bookid,b.title,b.author,startDate,date_add(startDate, interval 30 day) as endDate from xb_userbooks a, xb_books b where a.bookid = b.bookid and openid in (SELECT openid FROM xb_users where mobile = '" + userInfo.mobile + "') and returndate is null";
+        DoSQL(bsSQL, function(err, result) {
+            if (err) {
+                cb(err, EWTRACEEND({
+                    status: 0,
+                    "result": ""
+                }));
+            } else {
+                if (result.length == 0) {
+                    cb(null, EWTRACEEND({
+                        status: 0,
+                        "result": "用户未借书或已还清~"
+                    }));
+                    return;
+                }
+
+                var _result = {};
+
+                _result.id = userInfo.id;
+                _result.lease = {};
+                _result.lease.startDate = result[0].startDate;
+                _result.lease.endDate = result[0].endDate;
+                _result.details = [];
+
+                result.forEach(function(item) {
+
+                    var _detail = {};
+                    _detail.id = item.bookid;
+                    _detail.title = item.title;
+                    _detail.author = item.author;
+                    _result.details.push(_detail);
+                })
+
+
+                cb(null, EWTRACEEND({
+                    status: 1,
+                    "result": _result
+                }));
+            }
+        });
+
+    }
+    Xboxmanager.remoteMethod(
+        'getUserReturn2', {
+            http: {
+                verb: 'post'
+            },
+            description: '输入手机号码，得到用户未还的图书包',
+            accepts: [{
+                arg: 'userInfo',
+                type: 'object',
+                http: {
+                    source: 'body'
+                },
+                description: '{"mobile":18958064659}'
+            }, {
+                arg: 'token',
+                type: 'string',
+                http: function(ctx) {
+                    var req = ctx.req;
+                    return req.headers.token;
+                },
+                description: 'token'
+            }],
+            returns: {
+                arg: 'echostr',
+                type: 'object',
+                root: true
+            }
+
+        }
+    );
+
+    Xboxmanager.confirmUserReturn2 = function(userInfo, token, cb) {
+        EWTRACEBEGIN();
+
+        var OpenID = {};
+        try {
+            OpenID = GetOpenIDFromToken(token);
+        } catch (err) {
+            cb(err, EWTRACEEND({
+                status: 0,
+                "result": ""
+            }));
+            return;
+        }
+
+        var bsSQL = "update xb_userbooks set returndate = now() where openid in (SELECT openid FROM xb_users where mobile = '" + userInfo.mobile + "') and returndate is null";
+        DoSQL(bsSQL, function(err, result) {
+            if (err) {
+                cb(err, EWTRACEEND({
+                    status: 0,
+                    "result": ""
+                }));
+            } else {
+
+                cb(null, EWTRACEEND({
+                    status: 1,
+                    "result": ""
+                }));
+            }
+        });
+    }
+    Xboxmanager.remoteMethod(
+        'confirmUserReturn2', {
+            http: {
+                verb: 'post'
+            },
+            description: '输入手机号码，确认图书包归还',
+            accepts: [{
+                arg: 'userInfo',
+                type: 'object',
+                http: {
+                    source: 'body'
+                },
+                description: '{"mobile":18958064659}'
+            }, {
+                arg: 'token',
+                type: 'string',
+                http: function(ctx) {
+                    var req = ctx.req;
+                    return req.headers.token;
+                },
+                description: 'token'
+            }],
+            returns: {
+                arg: 'echostr',
+                type: 'object',
+                root: true
+            }
+
+        }
+    );
+
+
     Xboxmanager.confirmUserReturn = function(userInfo, token, cb) {
         EWTRACEBEGIN();
 
