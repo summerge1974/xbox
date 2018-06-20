@@ -1,6 +1,10 @@
 var log4js = require("log4js");
 var needle = require("needle");
 
+//添加环境变量
+//vi ~/.bash_profile
+//export NODE_ENV=maomaochong
+
 console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV == "maomaochong") {
   require("dotenv").config({ path: "./config/.env-maomaochong" });
