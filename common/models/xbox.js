@@ -90,7 +90,7 @@ module.exports = function(Xbox) {
     }
   });
 
-  Xbox.checkRegNum = function(token, userInfo, cb) {
+  Xbox.setUserMobile = function(token, userInfo, cb) {
     var OpenID = {};
     try {
       OpenID = GetOpenIDFromToken(token);
@@ -111,7 +111,7 @@ module.exports = function(Xbox) {
       "select from xb_regcode where mobile='" +
       userInfo.mobile +
       "' and regcode = " +
-      userInfo.regcode +
+      userInfo.code +
       ";";
 
     DoSQL(bsSQL, function(err, result) {
@@ -153,11 +153,11 @@ module.exports = function(Xbox) {
     });
   };
 
-  Xbox.remoteMethod("checkRegNum", {
+  Xbox.remoteMethod("setUserMobile", {
     http: {
       verb: "post"
     },
-    description: "发送验证短信",
+    description: "绑定⼿手机",
     accepts: [
       {
         arg: "token",
@@ -174,7 +174,7 @@ module.exports = function(Xbox) {
         http: {
           source: "body"
         },
-        description: '{"mobile":18958064659,"regcode":""}'
+        description: '{"mobile":18958064659,"code":""}'
       }
     ],
     returns: {
@@ -184,7 +184,7 @@ module.exports = function(Xbox) {
     }
   });
 
-  Xbox.sendCheckNum = function(userInfo, cb) {
+  Xbox.sendVerifyCode = function(userInfo, cb) {
     var Random = {
       Result: 0
     };
@@ -235,11 +235,11 @@ module.exports = function(Xbox) {
       );
     });
   };
-  Xbox.remoteMethod("sendCheckNum", {
+  Xbox.remoteMethod("sendVerifyCode", {
     http: {
       verb: "post"
     },
-    description: "发送验证短信",
+    description: "发送⼿手机验证码",
     accepts: {
       arg: "userInfo",
       type: "object",
@@ -577,7 +577,7 @@ module.exports = function(Xbox) {
     }
   });
 
-  Xbox.scheduleBook = function(bookId, token, cb) {
+  Xbox.reserveBook = function(bookId, token, cb) {
     EWTRACEBEGIN();
 
     var OpenID = {};
@@ -681,11 +681,11 @@ module.exports = function(Xbox) {
       }
     );
   };
-  Xbox.remoteMethod("scheduleBook", {
+  Xbox.remoteMethod("reserveBook", {
     http: {
       verb: "post"
     },
-    description: "数据预约",
+    description: "预约书籍",
     accepts: [
       {
         arg: "bookId",
@@ -693,7 +693,7 @@ module.exports = function(Xbox) {
         http: {
           source: "body"
         },
-        description: "{id:1,deviceId:12345678,cageId:1}"
+        description: "{deviceId:12345678,cageId:1}"
       },
       {
         arg: "token",
@@ -712,7 +712,7 @@ module.exports = function(Xbox) {
     }
   });
 
-  Xbox.scheduleBorrowBook = function(userInfo, cb) {
+  Xbox.getReservedBook = function(userInfo, cb) {
     var ps = [];
     var bsSQL =
       "select cageId,deviceId from xb_devicebooks where schuser = " +
@@ -845,11 +845,11 @@ module.exports = function(Xbox) {
     );
   };
 
-  Xbox.remoteMethod("scheduleBorrowBook", {
+  Xbox.remoteMethod("getReservedBook", {
     http: {
       verb: "post"
     },
-    description: "获取书籍详细信息",
+    description: "取预约的书籍",
     accepts: {
       arg: "bookId",
       type: "object",

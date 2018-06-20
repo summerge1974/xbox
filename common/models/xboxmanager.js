@@ -277,7 +277,7 @@ module.exports = function(Xboxmanager) {
     }
   });
 
-  Xboxmanager.getUserReturn2 = function(userInfo, token, cb) {
+  Xboxmanager.getUserReturnByMobile = function(userInfo, token, cb) {
     EWTRACEBEGIN();
 
     var OpenID = {};
@@ -345,7 +345,7 @@ module.exports = function(Xboxmanager) {
       }
     });
   };
-  Xboxmanager.remoteMethod("getUserReturn2", {
+  Xboxmanager.remoteMethod("getUserReturnByMobile", {
     http: {
       verb: "post"
     },
@@ -376,7 +376,7 @@ module.exports = function(Xboxmanager) {
     }
   });
 
-  Xboxmanager.confirmUserReturn2 = function(userInfo, token, cb) {
+  Xboxmanager.confirmUserReturnByMobile = function(userInfo, token, cb) {
     EWTRACEBEGIN();
 
     var OpenID = {};
@@ -417,7 +417,7 @@ module.exports = function(Xboxmanager) {
       }
     });
   };
-  Xboxmanager.remoteMethod("confirmUserReturn2", {
+  Xboxmanager.remoteMethod("confirmUserReturnByMobile", {
     http: {
       verb: "post"
     },
