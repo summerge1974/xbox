@@ -44,16 +44,20 @@ module.exports = function(Xbox) {
       } else {
         if (result.length == 0) {
           bsSQL =
-            "insert into xb_users(openid,name,isVip) values('" +
+            "insert into xb_users(openid,name,headimage,isVip) values('" +
             OpenID.openid +
             "','" +
             OpenID.nickname +
-            "',0)";
+            "',headimage = '"+
+            OpenID.headimgurl
+            +"'0)";
         } else {
           bsSQL =
             "update xb_users set name = '" +
             OpenID.nickname +
-            "' where openid = '" +
+            "',headimage = '"+
+            OpenID.headimgurl
+            +"' where openid = '" +
             OpenID.openid +
             "'";
         }
