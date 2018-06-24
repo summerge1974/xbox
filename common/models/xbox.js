@@ -1455,12 +1455,5 @@ module.exports = function(Xbox) {
     }
   });
 
-  Xbox.updateLBS = function(latitude, longitude, openid) {
-    EWTRACEBEGIN();
-    var bsSQL = "update xb_user set latitude = " + latitude + ", longitude = "+ longitude + 
-    " where openid = '"+openid+"'";
-    DoSQL(bsSQL, function(err) {
-      
-    });
-  };
+
 };

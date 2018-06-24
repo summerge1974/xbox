@@ -155,7 +155,7 @@ module.exports = function(Wechatevent) {
     }
 
     if ( xml.event[0] == "LOCATION"){
-      xbox.updateLBS(xml.latitude[0], xml.longitude[0],xml.fromusername[0]);
+      updateLBS(xml.latitude[0], xml.longitude[0],xml.fromusername[0]);
     }
 
     res.write(new Buffer("").toString("UTF-8"));
@@ -191,4 +191,14 @@ module.exports = function(Wechatevent) {
       root: true
     }
   });
+
+
+  updateLBS = function(latitude, longitude, openid) {
+    EWTRACEBEGIN();
+    var bsSQL = "update xb_user set latitude = " + latitude + ", longitude = "+ longitude + 
+    " where openid = '"+openid+"'";
+    DoSQL(bsSQL, function(err) {
+      
+    });
+  };  
 };
