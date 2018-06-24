@@ -147,6 +147,14 @@ module.exports = function(Wechatevent) {
     var q = req.query;
     var openid = q.openid; //微信加密签名
 
+
+    if ( q.event == "LOCATION"){
+      var bsSQL = "update xb_user set latitude = " + q.latitude + ", longitude = "+ q.longitude + 
+      " where openid = '"+q.fromusername+"'";
+
+      console.log(bsSQL);
+    }
+
     res.write(new Buffer("").toString("UTF-8"));
     res.end();
   };
