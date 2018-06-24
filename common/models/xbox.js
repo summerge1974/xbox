@@ -1455,5 +1455,75 @@ module.exports = function(Xbox) {
     }
   });
 
+  function Rad(d) {
+    return (d * Math.PI) / 180.0; //经纬度转换成三角函数中度分表形式。
+  }
 
+  function GetDistance(lat1, lng1, lat2, lng2) {
+    var radLat1 = Rad(lat1);
+    var radLat2 = Rad(lat2);
+    var a = radLat1 - radLat2;
+    var b = Rad(lng1) - Rad(lng2);
+    var s =
+      2 *
+      Math.asin(
+        Math.sqrt(
+          Math.pow(Math.sin(a / 2), 2) +
+            Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2)
+        )
+      );
+    s = s * 6378.137; // EARTH_RADIUS;
+    s = Math.round(s * 10000) / 10000; //输出为公里
+    //s=s.toFixed(4);
+    return s;
+  }
+
+  Xbox.checkDevicefromLBS = function(lbsInfo, cb) {
+    EWTRACEBEGIN();
+
+    var bsSQL = "select latitude,longitude from xb_devices where deviceId = " + lbsInfo.deviceId;
+
+    DoSQL(bsSQL, function(err, result ){
+      if ( err || result.length == 0  ){
+        cb(null, {
+          status: 0,
+          result: "设备获取失败"
+        });
+      }
+      else{
+        var distance = GetDistance(lbsInfo.latitude, lbsInfo.longitude, result[0].latitude, result[0].longitude);
+        if ( distance >= 500 ){
+          cb(null, {
+            status: 1,
+            result: false
+          });  
+        }else{
+          cb(null, {
+            status: 1,
+            result: true
+          });
+        }
+
+      }
+    })
+  };
+  Xbox.remoteMethod("checkDevicefromLBS", {
+    http: {
+      verb: "post"
+    },
+    description: "用户登录",
+    accepts: {
+      arg: "lsbInfo",
+      type: "object",
+      http: {
+        source: "body"
+      },
+      description: "{latitude:30.172501,longitude:120.076027,deviceId:11111111}"
+    },
+    returns: {
+      arg: "echostr",
+      type: "object",
+      root: true
+    }
+  });
 };
