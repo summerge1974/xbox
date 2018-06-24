@@ -195,10 +195,12 @@ module.exports = function(Wechatevent) {
 
   function updateLBS(latitude, longitude, openid) {
     EWTRACEBEGIN();
-    var bsSQL = "update xb_user set latitude = " + latitude + ", longitude = "+ longitude + 
+    var bsSQL = "update xb_users set latitude = " + latitude + ", longitude = "+ longitude + 
     " where openid = '"+openid+"'";
     DoSQL(bsSQL, function(err) {
-      
+      if ( err ){
+        console.log(err.message);
+      }
     });
   };  
 };
