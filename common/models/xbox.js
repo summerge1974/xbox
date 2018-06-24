@@ -1090,7 +1090,7 @@ module.exports = function(Xbox) {
     }
 
     var bsSQL =
-      "SELECT b.bookId as id, b.title, b.author,a.startDate,date_add(a.startDate, interval b.leaseDays day) as endDate ,a.returnDate FROM xb_userbooks a, xb_books b where a.bookid = b.bookid and a.openid = '" +
+      "SELECT b.bookId as id, b.title, b.author,a.startDate,date_add(a.startDate, interval b.leaseDays day) as endDate ,a.returnDate,b.image FROM xb_userbooks a, xb_books b where a.bookid = b.bookid and a.openid = '" +
       OpenID.openid +
       "' order by a.startDate desc limit 30";
     DoSQL(bsSQL, function(err, result) {
@@ -1105,18 +1105,48 @@ module.exports = function(Xbox) {
       } else {
         var _result = [];
         result.forEach(function(item) {
-          var _book = {};
-          _book.id = item.id;
-          _book.book = {};
-          _book.book.id = item.id;
-          _book.book.title = item.title;
-          _book.lease = {};
-          _book.lease.startDate = item.startDate;
-          _book.lease.endDate = item.endDate;
-          if (!_.isNull(item.returnDate)) {
-            _book.lease.returnDate = item.returnDate;
+
+          var find = _.find(_result, function(fitem){
+            return fitem.lease.startDate.format('yyyy-MM-dd') == item.startDate.format('yyyy-MM-dd');
+          })
+
+          if ( _.isUndefined(find)){
+            var _book = {};
+
+            _book.books = [];
+            var book = {};
+            book.id = item.id;
+            book.title = item.title;
+            book.image = item.image;
+            _book.books.push(book);
+            _book.lease = {};
+            _book.lease.startDate = item.startDate;
+            _book.lease.endDate = item.endDate;
+            _book.lease.returnDate = null;
+            if (!_.isNull(item.returnDate)) {
+              _book.lease.returnDate = item.returnDate;
+            }
+            _result.push(_book);
+          }else{
+            var book = {};
+            book.id = item.id;
+            book.title = item.title;
+            book.image = item.image;
+            find.books.push(book);
+
           }
-          _result.push(_book);
+          // var _book = {};
+          // _book.id = item.id;
+          // _book.book = {};
+          // _book.book.id = item.id;
+          // _book.book.title = item.title;
+          // _book.lease = {};
+          // _book.lease.startDate = item.startDate;
+          // _book.lease.endDate = item.endDate;
+          // if (!_.isNull(item.returnDate)) {
+          //   _book.lease.returnDate = item.returnDate;
+          // }
+          // _result.push(_book);
         });
 
         cb(
