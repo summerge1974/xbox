@@ -952,7 +952,7 @@ module.exports = function(Xbox) {
         var find = _.find(socketList, function(item) {
           return item.DeviceID == bookId.deviceId;
         });
-        if (!_.isUndefined(find) || bookId.deviceId== '11111111') {
+        if (!_.isUndefined(find) || bookId.deviceId == "11111111") {
           // 计算二进制BCC校验码，放入发送的最后一个字节中
           var _tmp = Str2Bytes(doorId);
 
@@ -967,18 +967,20 @@ module.exports = function(Xbox) {
           _tmp.push(_val);
           // 计算二进制BCC校验码，放入发送的最后一个字节中
 
-          var sendOver = find.userSocket.write(new Buffer(_tmp));
-          console.log(
-            "DeviceID:" +
-              bookId.deviceId +
-              ": DoorID：" +
-              doorId +
-              ", Data:" +
-              _tmp +
-              ", sendOver:" +
-              sendOver
-          );
-
+          var sendOver = true;
+          if (bookId.deviceId != "11111111") {
+            sendOver = find.userSocket.write(new Buffer(_tmp));
+            console.log(
+              "DeviceID:" +
+                bookId.deviceId +
+                ": DoorID：" +
+                doorId +
+                ", Data:" +
+                _tmp +
+                ", sendOver:" +
+                sendOver
+            );
+          }
           if (sendOver) {
             bsSQL =
               "insert into xb_userbooks(openid,bookid,startDate) select '" +
@@ -1481,31 +1483,36 @@ module.exports = function(Xbox) {
   Xbox.checkDevicefromLBS = function(lbsInfo, cb) {
     EWTRACEBEGIN();
 
-    var bsSQL = "select latitude,longitude from xb_devices where deviceId = " + lbsInfo.deviceId;
+    var bsSQL =
+      "select latitude,longitude from xb_devices where deviceId = " +
+      lbsInfo.deviceId;
 
-    DoSQL(bsSQL, function(err, result ){
-      if ( err || result.length == 0  ){
+    DoSQL(bsSQL, function(err, result) {
+      if (err || result.length == 0) {
         cb(null, {
           status: 0,
           result: "设备获取失败"
         });
-      }
-      else{
-        var distance = GetDistance(lbsInfo.latitude, lbsInfo.longitude, result[0].latitude, result[0].longitude);
-        if ( distance >= 300 ){
+      } else {
+        var distance = GetDistance(
+          lbsInfo.latitude,
+          lbsInfo.longitude,
+          result[0].latitude,
+          result[0].longitude
+        );
+        if (distance >= 300) {
           cb(null, {
             status: 1,
             result: false
-          });  
-        }else{
+          });
+        } else {
           cb(null, {
             status: 1,
             result: true
           });
         }
-
       }
-    })
+    });
   };
   Xbox.remoteMethod("checkDevicefromLBS", {
     http: {
