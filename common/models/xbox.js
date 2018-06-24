@@ -366,7 +366,7 @@ module.exports = function(Xbox) {
     ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
 
     bsSQL =
-      "SELECT a.deviceId,a.cageId,a.bookId,b.categoryId,b.title,b.image,now() as startDate, date_add(now(), interval b.leaseDays day) as endDate FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and a.deviceId like '" +
+      "SELECT a.deviceId,a.cageId,a.bookId,b.categoryId,b.title,b.image,now() as startDate, date_add(now(), interval b.leaseDays day) as endDate,a.schuser FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and a.deviceId like '" +
       _deviceId +
       "' order by a.cageId";
     var _booksList = {};
@@ -415,7 +415,7 @@ module.exports = function(Xbox) {
               item.schuser == "" ||
               item.schuser == _userInfo.Result[0].mobile
             ) {
-              if (!_.isUndefined(find)) {
+              if (_.isUndefined(find)) {
                 var _book = {};
                 _book.deviceId = item.deviceId;
                 _book.categoryId = item.categoryId;
