@@ -17,7 +17,7 @@ var rule = new schedule.RecurrenceRule();
 
 module.exports = function(Common) {
   initTimer = function() {
-    EWTRACE("init timer");
+    console.log("init timer");
     rule.second = 1;
     var job = schedule.scheduleJob(rule, function() {
       TimerCall();
