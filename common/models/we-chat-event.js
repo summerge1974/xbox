@@ -147,10 +147,15 @@ module.exports = function(Wechatevent) {
     var q = req.query;
     var openid = q.openid; //微信加密签名
 
+    var xml = req.body.xml;
+    var _eventKey = "";
+    if (!_.isUndefined(req.body.xml.eventkey)) {
+        _eventKey = req.body.xml.eventkey[0];
+    }
 
-    if ( q.event == "LOCATION"){
-      var bsSQL = "update xb_user set latitude = " + q.latitude + ", longitude = "+ q.longitude + 
-      " where openid = '"+q.fromusername+"'";
+    if ( xml.event[0] == "LOCATION"){
+      var bsSQL = "update xb_user set latitude = " + xml.latitude[0] + ", longitude = "+ xml.longitude[0] + 
+      " where openid = '"+xml.fromusername[0]+"'";
 
       console.log(bsSQL);
     }
