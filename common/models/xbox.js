@@ -952,7 +952,7 @@ module.exports = function(Xbox) {
         var find = _.find(socketList, function(item) {
           return item.DeviceID == bookId.deviceId;
         });
-        if (!_.isUndefined(find)) {
+        if (!_.isUndefined(find) || bookId.deviceId== '11111111') {
           // 计算二进制BCC校验码，放入发送的最后一个字节中
           var _tmp = Str2Bytes(doorId);
 
