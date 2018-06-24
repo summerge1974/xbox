@@ -193,7 +193,7 @@ module.exports = function(Wechatevent) {
   });
 
 
-  updateLBS = function(latitude, longitude, openid) {
+  function updateLBS(latitude, longitude, openid) {
     EWTRACEBEGIN();
     var bsSQL = "update xb_user set latitude = " + latitude + ", longitude = "+ longitude + 
     " where openid = '"+openid+"'";
