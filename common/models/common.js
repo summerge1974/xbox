@@ -27,7 +27,7 @@ module.exports = function(Common) {
   initTimer();
 
   TimerCall = function() {
-    if (timerevent.app.datasources == undefined) {
+    if (Common.app.datasources == undefined) {
       return;
     }
 
