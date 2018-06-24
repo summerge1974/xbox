@@ -1492,7 +1492,7 @@ module.exports = function(Xbox) {
       }
       else{
         var distance = GetDistance(lbsInfo.latitude, lbsInfo.longitude, result[0].latitude, result[0].longitude);
-        if ( distance >= 500 ){
+        if ( distance >= 300 ){
           cb(null, {
             status: 1,
             result: false
