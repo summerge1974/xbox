@@ -415,7 +415,7 @@ module.exports = function(Xbox) {
               item.schuser == "" ||
               item.schuser == _userInfo.Result[0].mobile
             ) {
-              if (_.isUndefined(find)) {
+              if (!_.isUndefined(find)) {
                 var _book = {};
                 _book.deviceId = item.deviceId;
                 _book.categoryId = item.categoryId;
