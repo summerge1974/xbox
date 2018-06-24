@@ -48,16 +48,16 @@ module.exports = function(Xbox) {
             OpenID.openid +
             "','" +
             OpenID.nickname +
-            "',headimage = '"+
-            OpenID.headimgurl
-            +"'0)";
+            "',headimage = '" +
+            OpenID.headimgurl +
+            "'0)";
         } else {
           bsSQL =
             "update xb_users set name = '" +
             OpenID.nickname +
-            "',headimage = '"+
-            OpenID.headimgurl
-            +"' where openid = '" +
+            "',headimage = '" +
+            OpenID.headimgurl +
+            "' where openid = '" +
             OpenID.openid +
             "'";
         }
@@ -279,7 +279,7 @@ module.exports = function(Xbox) {
     }
 
     var bsSQL =
-      "select openid as id,name,isVip,expireDate,mobile from xb_users where openid = '" +
+      "select openid as id,name,isVip,expireDate,mobile,headimage,latitude,longitude from xb_users where openid = '" +
       OpenID.openid +
       "'";
 
@@ -1454,4 +1454,13 @@ module.exports = function(Xbox) {
       root: true
     }
   });
+
+  Xbox.updateLBS = function(latitude, longitude, openid) {
+    EWTRACEBEGIN();
+    var bsSQL = "update xb_user set latitude = " + latitude + ", longitude = "+ longitude + 
+    " where openid = '"+openid+"'";
+    DoSQL(bsSQL, function(err) {
+      
+    });
+  };
 };

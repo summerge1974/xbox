@@ -5,6 +5,7 @@ module.exports = function(Wechatevent) {
   app.DisableSystemMethod(Wechatevent);
   var _ = require("underscore");
   const needle = require("needle");
+  var xbox = require('./xbox');
 
   Wechatevent.CreateWXMenu = function(cb) {
     EWTRACE("CreateWXMenu Begin");
@@ -154,10 +155,7 @@ module.exports = function(Wechatevent) {
     }
 
     if ( xml.event[0] == "LOCATION"){
-      var bsSQL = "update xb_user set latitude = " + xml.latitude[0] + ", longitude = "+ xml.longitude[0] + 
-      " where openid = '"+xml.fromusername[0]+"'";
-
-      console.log(bsSQL);
+      xbox.updateLBS(xml.latitude[0], xml.longitude[0],xml.fromusername[0]);
     }
 
     res.write(new Buffer("").toString("UTF-8"));
