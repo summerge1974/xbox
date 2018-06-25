@@ -39,7 +39,7 @@
           "type": "form",
           "form": {
             "mobile": "{!mobile}",
-            "message": "您的验证码是{!code}, {ttl=5}分钟内有效。【曼康信息】"
+            "message": "您的验证码是{!code}, {ttl=5}分钟内有效。【毛毛虫阅读】"
           },
           "responsePath": "$"
         },
