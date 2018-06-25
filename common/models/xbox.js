@@ -1113,7 +1113,7 @@ module.exports = function(Xbox) {
           var find = _.find(_result, function(fitem) {
             return (
               fitem.lease.startDate.format("yyyy-MM-dd") ==
-              item.startDate.format("yyyy-MM-dd")
+              item.startDate.format("yyyy-MM-dd") && fitem.preserve == false
             );
           });
 
@@ -1148,7 +1148,7 @@ module.exports = function(Xbox) {
           var find = _.find(_result, function(fitem) {
             return (
               fitem.lease.startDate.format("yyyy-MM-dd") ==
-              item.startDate.format("yyyy-MM-dd")
+              item.startDate.format("yyyy-MM-dd") && fitem.preserve == true
             );
           });
 
