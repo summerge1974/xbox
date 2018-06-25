@@ -292,7 +292,11 @@ module.exports = function(Common) {
 
   SendSMS = function(mobile, context, type) {
     _SendSMS = function(resolve, reject) {
+
       var smsService = Common.app.dataSources.luosimaoRest;
+      if (process.env.NODE_ENV == "maomaochong") {
+      
+      }
       if (type == 1) {
         smsService = Common.app.dataSources.luosimaoRegCheck;
       }
