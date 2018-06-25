@@ -1093,8 +1093,8 @@ module.exports = function(Xbox) {
 
     var ps = [];
 
-    var bsSQL =
-      "select name from xb_devices where deviceID = '" + _deviceId + "' ";
+    var bsSQL = "SELECT c.bookId as id, c.title, c.author,a.schtime as startDate,'' as endDate ,'' as returnDate,c.image FROM xb_devicebooks a, xb_users b, xb_books c where c.bookid = a.bookid and a.schuser = b.mobile and b.openid = '" +
+    OpenID.openid + "'"
     var _schList = {};
     ps.push(ExecuteSyncSQLResult(bsSQL, _schList));
 
