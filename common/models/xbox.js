@@ -1101,7 +1101,7 @@ module.exports = function(Xbox) {
     bsSQL =
       "SELECT b.bookId as id, b.title, b.author,a.startDate,date_add(a.startDate, interval b.leaseDays day) as endDate ,a.returnDate,b.image FROM xb_userbooks a, xb_books b where a.bookid = b.bookid and a.openid = '" +
       OpenID.openid +
-      "' order by a.startDate desc limit 30";
+      "' order by a.startDate desc";
     var _BorrowList = {};
     ps.push(ExecuteSyncSQLResult(bsSQL, _BorrowList));
 
