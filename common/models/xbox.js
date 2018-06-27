@@ -608,7 +608,7 @@ module.exports = function(Xbox) {
       bookId.deviceId +
       " and cageId = " +
       bookId.cageId +
-      " and schuser <> ''";
+      " and schuser = ''";
     var _deviceBookInfo = {};
     ps.push(ExecuteSyncSQLResult(bsSQL, _deviceBookInfo));
 
