@@ -412,8 +412,8 @@ module.exports = function(Xbox) {
             });
 
             if (
-              item.schuser == "" ||
-              item.schuser == _userInfo.Result[0].mobile
+              item.schuser == "" /*||
+              item.schuser == _userInfo.Result[0].mobile*/
             ) {
               if (_.isUndefined(find)) {
                 var _book = {};
