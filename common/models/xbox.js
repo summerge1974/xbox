@@ -112,14 +112,14 @@ module.exports = function(Xbox) {
     }
 
     var bsSQL =
-      "select from xb_regcode where mobile='" +
+      "select * from xb_regcode where mobile='" +
       userInfo.mobile +
       "' and regcode = " +
       userInfo.code +
       ";";
 
     DoSQL(bsSQL, function(err, result) {
-      if (result.length > 0) {
+      if (!_.isUndefined(result) && result.length > 0) {
         bsSQL =
           "update xb_users set mobile = " +
           userInfo.mobile +
@@ -229,10 +229,10 @@ module.exports = function(Xbox) {
         },
         function(err) {
           cb(
-            err,
+            null,
             EWTRACEEND({
               status: 0,
-              result: ""
+              result: err.message
             })
           );
         }
@@ -366,7 +366,7 @@ module.exports = function(Xbox) {
     ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
 
     bsSQL =
-      "SELECT a.deviceId,a.cageId,a.bookId,b.categoryId,b.title,b.image,now() as startDate, date_add(now(), interval b.leaseDays day) as endDate,a.schuser FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and a.deviceId like '" +
+      "SELECT a.deviceId,a.cageId,a.bookId,b.categoryId,b.title,b.image,date_format(now(),'%Y-%m-%d') as startDate, date_format(date_add(now(), interval b.leaseDays day),'%Y-%m-%d') as endDate,a.schuser FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and a.deviceId like '" +
       _deviceId +
       "' order by a.cageId";
     var _booksList = {};
@@ -510,7 +510,7 @@ module.exports = function(Xbox) {
     }
 
     var bsSQL =
-      "select bookid as id, detailimages as image, title,author,press,price,now() as startDate, date_add(now(), interval leaseDays day) as endDate from xb_books where bookid in (" +
+      "select bookid as id, detailimages as image, title,author,press,price,date_format(now(),'%Y-%m-%d') as startDate, date_format(date_add(now(), interval leaseDays day),'%Y-%m-%d') as endDate from xb_books where bookid in (" +
       _booklist +
       ")";
 
@@ -912,6 +912,13 @@ module.exports = function(Xbox) {
     var _userInfo = {};
     ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
 
+    bsSQL =
+      "select * from xb_devicebooks where schuser in (select mobile from xb_users where openid = '" +
+      OpenID.openid +
+      "')";
+    var _reserveBookInfo = {};
+    ps.push(ExecuteSyncSQLResult(bsSQL, _reserveBookInfo));
+
     Promise.all(ps).then(
       function() {
         if (_userInfo.Result.length == 0) {
@@ -945,6 +952,18 @@ module.exports = function(Xbox) {
           );
           return;
         }
+        if (_reserveBookInfo.Result.length != 0) {
+          cb(
+            null,
+            EWTRACEEND({
+              status: 0,
+              result: "请取走预约书籍，勿再次借阅"
+            })
+          );
+          return;
+        }
+
+        
 
         var doorId = convertNumber(bookId.cageId);
         EWTRACE(doorId);
@@ -1093,13 +1112,15 @@ module.exports = function(Xbox) {
 
     var ps = [];
 
-    var bsSQL = "SELECT c.bookId as id, c.title, c.author,a.schtime as startDate,'' as endDate ,'' as returnDate,c.image FROM xb_devicebooks a, xb_users b, xb_books c where c.bookid = a.bookid and a.schuser = b.mobile and b.openid = '" +
-    OpenID.openid + "'"
+    var bsSQL =
+      "SELECT c.bookId as id, c.title, c.author,date_format(a.schtime,'%Y-%m-%d') as startDate,'' as endDate ,'' as returnDate,c.image FROM xb_devicebooks a, xb_users b, xb_books c where c.bookid = a.bookid and a.schuser = b.mobile and b.openid = '" +
+      OpenID.openid +
+      "'";
     var _schList = {};
     ps.push(ExecuteSyncSQLResult(bsSQL, _schList));
 
     bsSQL =
-      "SELECT b.bookId as id, b.title, b.author,a.startDate,date_add(a.startDate, interval b.leaseDays day) as endDate ,a.returnDate,b.image FROM xb_userbooks a, xb_books b where a.bookid = b.bookid and a.openid = '" +
+      "SELECT b.bookId as id, b.title, b.author,date_format(a.startDate,'%Y-%m-%d') as startDate,date_format(date_add(a.startDate, interval b.leaseDays day),'%Y-%m-%d') as endDate ,date_format(a.returnDate,'%Y-%m-%d') as returnDate,b.image FROM xb_userbooks a, xb_books b where a.bookid = b.bookid and a.openid = '" +
       OpenID.openid +
       "' order by a.startDate desc";
     var _BorrowList = {};
@@ -1112,8 +1133,8 @@ module.exports = function(Xbox) {
         _BorrowList.Result.forEach(function(item) {
           var find = _.find(_result, function(fitem) {
             return (
-              fitem.lease.startDate.format("yyyy-MM-dd") ==
-              item.startDate.format("yyyy-MM-dd") && fitem.preserve == false
+              fitem.lease.startDate ==
+                item.startDate && fitem.preserve == false
             );
           });
 
@@ -1147,8 +1168,8 @@ module.exports = function(Xbox) {
         _schList.Result.forEach(function(item) {
           var find = _.find(_result, function(fitem) {
             return (
-              fitem.lease.startDate.format("yyyy-MM-dd") ==
-              item.startDate.format("yyyy-MM-dd") && fitem.preserve == true
+              fitem.lease.startDate ==
+                item.startDate && fitem.preserve == true
             );
           });
 
@@ -1546,7 +1567,7 @@ module.exports = function(Xbox) {
     return s;
   }
 
-  Xbox.checkDevicefromLBS = function(lbsInfo, cb) {
+  Xbox.isNearDevice = function(lbsInfo, cb) {
     EWTRACEBEGIN();
 
     var bsSQL =
@@ -1580,7 +1601,7 @@ module.exports = function(Xbox) {
       }
     });
   };
-  Xbox.remoteMethod("checkDevicefromLBS", {
+  Xbox.remoteMethod("isNearDevice", {
     http: {
       verb: "post"
     },
