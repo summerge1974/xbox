@@ -196,7 +196,7 @@ module.exports = function(Xboxmanager) {
     }
 
     var bsSQL =
-      "select openid,a.bookid,b.title,b.author,startDate,date_add(startDate, interval 30 day) as endDate from xb_userbooks a, xb_books b where a.bookid = b.bookid and openid = '" +
+      "select openid,a.bookid,b.title,b.author,date_format(startDate,'%Y-%m-%d') as startDate,date_format(date_add(startDate, interval 30 day),'%Y-%m-%d') as endDate from xb_userbooks a, xb_books b where a.bookid = b.bookid and openid = '" +
       userInfo.id +
       "' and returndate is null";
     DoSQL(bsSQL, function(err, result) {
@@ -295,7 +295,7 @@ module.exports = function(Xboxmanager) {
     }
 
     var bsSQL =
-      "select openid,a.bookid,b.title,b.author,startDate,date_add(startDate, interval 30 day) as endDate from xb_userbooks a, xb_books b where a.bookid = b.bookid and openid in (SELECT openid FROM xb_users where mobile = '" +
+      "select openid,a.bookid,b.title,b.author,date_format(startDate,'%Y-%m-%d') as startDate,date_format(date_add(startDate, interval 30 day),'%Y-%m-%d') as endDate from xb_userbooks a, xb_books b where a.bookid = b.bookid and openid in (SELECT openid FROM xb_users where mobile = '" +
       userInfo.mobile +
       "') and returndate is null";
     DoSQL(bsSQL, function(err, result) {
