@@ -1117,7 +1117,7 @@ module.exports = function(Xbox) {
     var ps = [];
 
     var bsSQL =
-      "SELECT c.bookId as id, c.title, c.author,date_format(a.schtime,'%Y-%m-%d') as startDate,'' as endDate ,'' as returnDate,c.image FROM xb_devicebooks a, xb_users b, xb_books c where c.bookid = a.bookid and a.schuser = b.mobile and b.openid = '" +
+      "SELECT c.bookId as id, c.title, c.author,date_format(a.schtime,'%Y-%m-%d') as startDate,'' as endDate ,'' as returnDate,c.image FROM xb_devicebooks a, xb_users b, xb_books c where b.mobile <> '' and c.bookid = a.bookid and a.schuser = b.mobile and b.openid = '" +
       OpenID.openid +
       "'";
     var _schList = {};
