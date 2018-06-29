@@ -898,12 +898,12 @@ module.exports = function(Xbox) {
     var _deviceBookInfo = {};
     ps.push(ExecuteSyncSQLResult(bsSQL, _deviceBookInfo));
 
-    // bsSQL =
-    //   "select * from xb_userbooks where openid = '" +
-    //   OpenID.openid +
-    //   "' and returnDate is null";
-    // var _userBookInfo = {};
-    // ps.push(ExecuteSyncSQLResult(bsSQL, _userBookInfo));
+    bsSQL =
+      "select * from xb_userbooks where openid = '" +
+      OpenID.openid +
+      "' and returnDate is null";
+    var _userBookInfo = {};
+    ps.push(ExecuteSyncSQLResult(bsSQL, _userBookInfo));
 
     bsSQL =
       "select * from xb_users where openid = '" +
