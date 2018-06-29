@@ -1596,7 +1596,7 @@ module.exports = function(Xbox) {
         );
 
         console.log("length:"+distance);
-        if (distance >= 300) {
+        if (distance >= 0.5) {
           cb(null, {
             status: 1,
             result: false
