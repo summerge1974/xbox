@@ -1573,6 +1573,7 @@ module.exports = function(Xbox) {
 
   Xbox.isNearDevice = function(lbsInfo, cb) {
     EWTRACEBEGIN();
+    EWTRACE(lbsInfo);
 
     var bsSQL =
       "select latitude,longitude from xb_devices where deviceId = " +
@@ -1585,6 +1586,8 @@ module.exports = function(Xbox) {
           result: "设备获取失败"
         });
       } else {
+        EWTRACE(result[0]);
+        
         var distance = GetDistance(
           lbsInfo.latitude,
           lbsInfo.longitude,
