@@ -898,12 +898,12 @@ module.exports = function(Xbox) {
     var _deviceBookInfo = {};
     ps.push(ExecuteSyncSQLResult(bsSQL, _deviceBookInfo));
 
-    bsSQL =
-      "select * from xb_userbooks where openid = '" +
-      OpenID.openid +
-      "' and returnDate is null";
-    var _userBookInfo = {};
-    ps.push(ExecuteSyncSQLResult(bsSQL, _userBookInfo));
+    // bsSQL =
+    //   "select * from xb_userbooks where openid = '" +
+    //   OpenID.openid +
+    //   "' and returnDate is null";
+    // var _userBookInfo = {};
+    // ps.push(ExecuteSyncSQLResult(bsSQL, _userBookInfo));
 
     bsSQL =
       "select * from xb_users where openid = '" +
@@ -942,16 +942,16 @@ module.exports = function(Xbox) {
           );
           return;
         }
-        if (_userBookInfo.Result.length != 0) {
-          cb(
-            null,
-            EWTRACEEND({
-              status: 0,
-              result: "请先归还上次借阅的书籍后再次借阅"
-            })
-          );
-          return;
-        }
+        // if (_userBookInfo.Result.length != 0) {
+        //   cb(
+        //     null,
+        //     EWTRACEEND({
+        //       status: 0,
+        //       result: "请先归还上次借阅的书籍后再次借阅"
+        //     })
+        //   );
+        //   return;
+        // }
         // if (_reserveBookInfo.Result.length != 0) {
         //   cb(
         //     null,
