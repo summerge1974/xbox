@@ -50,7 +50,7 @@ module.exports = function(Xbox) {
             OpenID.nickname +
             "',headimage = '" +
             OpenID.headimgurl +
-            "'0)";
+            "',0)";
         } else {
           bsSQL =
             "update xb_users set name = '" +
