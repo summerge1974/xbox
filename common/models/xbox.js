@@ -912,12 +912,12 @@ module.exports = function(Xbox) {
     var _userInfo = {};
     ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
 
-    bsSQL =
-      "select * from xb_devicebooks where schuser in (select mobile from xb_users where openid = '" +
-      OpenID.openid +
-      "')";
-    var _reserveBookInfo = {};
-    ps.push(ExecuteSyncSQLResult(bsSQL, _reserveBookInfo));
+    // bsSQL =
+    //   "select * from xb_devicebooks where schuser in (select mobile from xb_users where openid = '" +
+    //   OpenID.openid +
+    //   "')";
+    // var _reserveBookInfo = {};
+    // ps.push(ExecuteSyncSQLResult(bsSQL, _reserveBookInfo));
 
     Promise.all(ps).then(
       function() {
@@ -952,16 +952,16 @@ module.exports = function(Xbox) {
           );
           return;
         }
-        if (_reserveBookInfo.Result.length != 0) {
-          cb(
-            null,
-            EWTRACEEND({
-              status: 0,
-              result: "请取走预约书籍，勿再次借阅"
-            })
-          );
-          return;
-        }
+        // if (_reserveBookInfo.Result.length != 0) {
+        //   cb(
+        //     null,
+        //     EWTRACEEND({
+        //       status: 0,
+        //       result: "请取走预约书籍，勿再次借阅"
+        //     })
+        //   );
+        //   return;
+        // }
 
         
 
@@ -1015,7 +1015,11 @@ module.exports = function(Xbox) {
               "delete from xb_devicebooks where deviceId=" +
               bookId.deviceId +
               " and cageId = " +
-              bookId.cageId;
+              bookId.cageId+
+              ";";
+
+            bsSQL += "update xb_devicebooks set schuser = '' where schuser = '"+
+             _userInfo.Result[0].mobile+"';";
 
             DoSQL(bsSQL, function(err) {
               if (err) {
