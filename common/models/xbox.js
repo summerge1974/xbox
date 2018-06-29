@@ -302,6 +302,12 @@ module.exports = function(Xbox) {
             })
           );
         } else {
+
+          if ( result[0].isVip == 0 ){
+            result[0].isVip = false;
+          }else{
+            result[0].isVip = true;
+          }
           cb(
             null,
             EWTRACEEND({
