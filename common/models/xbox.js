@@ -1594,6 +1594,8 @@ module.exports = function(Xbox) {
           result[0].latitude,
           result[0].longitude
         );
+
+        console.log("length:"+distance);
         if (distance >= 300) {
           cb(null, {
             status: 1,
