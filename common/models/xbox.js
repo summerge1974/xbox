@@ -942,16 +942,16 @@ module.exports = function(Xbox) {
           );
           return;
         }
-        // if (_userBookInfo.Result.length != 0) {
-        //   cb(
-        //     null,
-        //     EWTRACEEND({
-        //       status: 0,
-        //       result: "请先归还上次借阅的书籍后再次借阅"
-        //     })
-        //   );
-        //   return;
-        // }
+        if (_userBookInfo.Result.length != 0) {
+          cb(
+            null,
+            EWTRACEEND({
+              status: 0,
+              result: "请先归还上次借阅的书籍后再次借阅"
+            })
+          );
+          return;
+        }
         // if (_reserveBookInfo.Result.length != 0) {
         //   cb(
         //     null,
