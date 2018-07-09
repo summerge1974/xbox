@@ -811,7 +811,10 @@ module.exports = function(Xbox) {
               "delete from xb_devicebooks where deviceId=" +
               bookId.deviceId +
               " and cageId = " +
-              bookId.cageId;
+              bookId.cageId + ";";
+            
+            bsSQL += "update xb_users set lastDeviceId = '"+bookId.deviceId + 
+              "' where openid = '"+OpenID.openid+"';";              
 
             DoSQL(bsSQL, function(err) {
               if (err) {
@@ -1027,6 +1030,9 @@ module.exports = function(Xbox) {
             bsSQL += "update xb_devicebooks set schuser = '' where schuser = '"+
              _userInfo.Result[0].mobile+"';";
 
+            bsSQL += "update xb_users set lastDeviceId = '"+bookId.deviceId + 
+            "' where openid = '"+OpenID.openid+"';";
+ 
             DoSQL(bsSQL, function(err) {
               if (err) {
                 cb(
