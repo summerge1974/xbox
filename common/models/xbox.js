@@ -1715,7 +1715,7 @@ module.exports = function(Xbox) {
       return;
     }
 
-    var bsSQL = "select deviceId, name,latitude,longitude from xb_devices";
+    var bsSQL = "select deviceId, name,latitude,longitude,address from xb_devices";
 
     DoSQL(bsSQL, function(err, deviceList) {
       if (err || deviceList.length == 0) {
