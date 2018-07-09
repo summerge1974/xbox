@@ -302,10 +302,9 @@ module.exports = function(Xbox) {
             })
           );
         } else {
-
-          if ( result[0].isVip == 0 ){
+          if (result[0].isVip == 0) {
             result[0].isVip = false;
-          }else{
+          } else {
             result[0].isVip = true;
           }
           cb(
@@ -418,7 +417,8 @@ module.exports = function(Xbox) {
             });
 
             if (
-              item.schuser == "" /*||
+              item.schuser ==
+              "" /*||
               item.schuser == _userInfo.Result[0].mobile*/
             ) {
               if (_.isUndefined(find)) {
@@ -811,10 +811,15 @@ module.exports = function(Xbox) {
               "delete from xb_devicebooks where deviceId=" +
               bookId.deviceId +
               " and cageId = " +
-              bookId.cageId + ";";
-            
-            bsSQL += "update xb_users set lastDeviceId = '"+bookId.deviceId + 
-              "' where openid = '"+OpenID.openid+"';";              
+              bookId.cageId +
+              ";";
+
+            bsSQL +=
+              "update xb_users set lastDeviceId = '" +
+              bookId.deviceId +
+              "' where openid = '" +
+              OpenID.openid +
+              "';";
 
             DoSQL(bsSQL, function(err) {
               if (err) {
@@ -972,8 +977,6 @@ module.exports = function(Xbox) {
         //   return;
         // }
 
-        
-
         var doorId = convertNumber(bookId.cageId);
         EWTRACE(doorId);
 
@@ -1024,15 +1027,21 @@ module.exports = function(Xbox) {
               "delete from xb_devicebooks where deviceId=" +
               bookId.deviceId +
               " and cageId = " +
-              bookId.cageId+
+              bookId.cageId +
               ";";
 
-            bsSQL += "update xb_devicebooks set schuser = '' where schuser = '"+
-             _userInfo.Result[0].mobile+"';";
+            bsSQL +=
+              "update xb_devicebooks set schuser = '' where schuser = '" +
+              _userInfo.Result[0].mobile +
+              "';";
 
-            bsSQL += "update xb_users set lastDeviceId = '"+bookId.deviceId + 
-            "' where openid = '"+OpenID.openid+"';";
- 
+            bsSQL +=
+              "update xb_users set lastDeviceId = '" +
+              bookId.deviceId +
+              "' where openid = '" +
+              OpenID.openid +
+              "';";
+
             DoSQL(bsSQL, function(err) {
               if (err) {
                 cb(
@@ -1149,8 +1158,7 @@ module.exports = function(Xbox) {
         _BorrowList.Result.forEach(function(item) {
           var find = _.find(_result, function(fitem) {
             return (
-              fitem.lease.startDate ==
-                item.startDate && fitem.preserve == false
+              fitem.lease.startDate == item.startDate && fitem.preserve == false
             );
           });
 
@@ -1184,8 +1192,7 @@ module.exports = function(Xbox) {
         _schList.Result.forEach(function(item) {
           var find = _.find(_result, function(fitem) {
             return (
-              fitem.lease.startDate ==
-                item.startDate && fitem.preserve == true
+              fitem.lease.startDate == item.startDate && fitem.preserve == true
             );
           });
 
@@ -1607,7 +1614,7 @@ module.exports = function(Xbox) {
           result[0].longitude
         );
 
-        console.log("length:"+distance);
+        console.log("length:" + distance);
         if (distance >= 0.5) {
           cb(null, {
             status: 1,
@@ -1642,41 +1649,151 @@ module.exports = function(Xbox) {
     }
   });
 
-  Xbox.rename = function (cb) {
-
+  Xbox.rename = function(cb) {
     EWTRACE("rename Begin");
     var shell = require("shelljs");
 
     shell.exec("echo hello ");
 
-    var fs = require('fs');
-    var data = fs.readFileSync('//Users//geling//code//1//download.dat', "utf-8");
+    var fs = require("fs");
+    var data = fs.readFileSync(
+      "//Users//geling//code//1//download.dat",
+      "utf-8"
+    );
 
-
-    var index = data.split('\n');
+    var index = data.split("\n");
 
     for (var i = 0; i < index.length; i++) {
-        var name = index[i].split('@');
+      var name = index[i].split("@");
 
-        var fname = name[6].replace('(', '[');
-        fname = fname.replace('）', ']');
-        fname = fname.replace(')', ']');
-        fname = fname.replace(/ /g, '');
-        var smv = 'mv //Users//geling//code//1//' + name[1] + ' //Users//geling//code//1//' + fname + '.mp3';
-        console.log(smv);
-        shell.exec('mv //Users//geling//code//1//' + name[1] + ' //Users//geling//code//1//' + fname + '.mp3');
-
+      var fname = name[6].replace("(", "[");
+      fname = fname.replace("）", "]");
+      fname = fname.replace(")", "]");
+      fname = fname.replace(/ /g, "");
+      var smv =
+        "mv //Users//geling//code//1//" +
+        name[1] +
+        " //Users//geling//code//1//" +
+        fname +
+        ".mp3";
+      console.log(smv);
+      shell.exec(
+        "mv //Users//geling//code//1//" +
+          name[1] +
+          " //Users//geling//code//1//" +
+          fname +
+          ".mp3"
+      );
     }
 
     cb(null, { status: 1 });
-}
+  };
 
-Xbox.remoteMethod(
-    'rename',
-    {
-        http: { verb: 'post' },
-        description: '改名字',
-        returns: { arg: 'RegInfo', type: 'object', root: true }
+  Xbox.remoteMethod("rename", {
+    http: { verb: "post" },
+    description: "改名字",
+    returns: { arg: "RegInfo", type: "object", root: true }
+  });
+
+  Xbox.getOnlineDevices = function(token, lbsInfo, cb) {
+    EWTRACEBEGIN();
+    console.log(lbsInfo);
+
+    var OpenID = {};
+    try {
+      OpenID = GetOpenIDFromToken(token);
+      delete OpenID.exp;
+      delete OpenID.iat;
+    } catch (err) {
+      cb(
+        err,
+        EWTRACEEND({
+          status: 0,
+          result: ""
+        })
+      );
+      return;
     }
-);  
+
+    var bsSQL = "select deviceId, name,latitude,longitude from xb_devices";
+
+    DoSQL(bsSQL, function(err, deviceList) {
+      if (err || deviceList.length == 0) {
+        cb(null, {
+          status: 0,
+          result: "设备获取失败"
+        });
+      } else {
+        var result = {};
+        result.lastActiveDevice = {};
+        result.onlineDeviceList = [];
+
+        deviceList.forEach(function(item) {
+          item.distance = GetDistance(
+            lbsInfo.latitude,
+            lbsInfo.longitude,
+            item.latitude,
+            item.longitude
+          );
+        });
+
+        bsSQL =
+          "select ifnull(lastdeviceid,0) as lastDeviceId from xb_users where openid = '" +
+          OpenID.openid +
+          "'";
+        DoSQL(bsSQL, function(err, userInfo) {
+          var lastDeviceId = 0;
+          if (userInfo.length >= 0) {
+            lastDeviceId = userInfo[0].lastDeviceId;
+          }
+
+          deviceList.forEach(function(item) {
+            if (item.deviceId == lastDeviceId) {
+              result.lastActiveDevice = item;
+            } else {
+              result.onlineDeviceList.push(item);
+            }
+          });
+          result.onlineDeviceList = _.sortBy(
+            result.onlineDeviceList,
+            "distance"
+          );
+          cb(null, {
+            status: 1,
+            result: result
+          });
+        });
+      }
+    });
+  };
+
+  Xbox.remoteMethod("getOnlineDevices", {
+    http: {
+      verb: "post"
+    },
+    description: "用户登录",
+    accepts: [
+      {
+        arg: "token",
+        type: "string",
+        http: function(ctx) {
+          var req = ctx.req;
+          return req.headers.token;
+        }
+      },
+      {
+        arg: "lsbInfo",
+        type: "object",
+        http: {
+          source: "body"
+        },
+        description: '{"latitude":30.172501,"longitude":120.076027}'
+      }
+    ],
+    returns: {
+      arg: "echostr",
+      type: "object",
+      root: true
+    }
+  });
 };
