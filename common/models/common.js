@@ -267,6 +267,9 @@ module.exports = function(Common) {
   };
 
   wx_CreateOrders = function(fee, openid) {
+    if (process.env.NODE_ENV == "test") {
+      fee = 1;
+    }
     return new Promise(function(resolve, reject) {
       var _fee = fee * 100;
       var url =

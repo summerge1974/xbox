@@ -1635,4 +1635,42 @@ module.exports = function(Xbox) {
       root: true
     }
   });
+
+  Xbox.rename = function (cb) {
+
+    EWTRACE("rename Begin");
+    var shell = require("shelljs");
+
+    shell.exec("echo hello ");
+
+    var fs = require('fs');
+    var data = fs.readFileSync('//Users//geling//code//1//download.dat', "utf-8");
+
+
+    var index = data.split('\n');
+
+    for (var i = 0; i < index.length; i++) {
+        var name = index[i].split('@');
+
+        var fname = name[6].replace('(', '[');
+        fname = fname.replace('）', ']');
+        fname = fname.replace(')', ']');
+        fname = fname.replace(/ /g, '');
+        var smv = 'mv //Users//geling//code//1//' + name[1] + ' //Users//geling//code//1//' + fname + '.mp3';
+        console.log(smv);
+        shell.exec('mv //Users//geling//code//1//' + name[1] + ' //Users//geling//code//1//' + fname + '.mp3');
+
+    }
+
+    cb(null, { status: 1 });
+}
+
+Xbox.remoteMethod(
+    'rename',
+    {
+        http: { verb: 'post' },
+        description: '改名字',
+        returns: { arg: 'RegInfo', type: 'object', root: true }
+    }
+);  
 };
