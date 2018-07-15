@@ -1717,7 +1717,7 @@ module.exports = function(Xbox) {
 
     var bsSQL = "select deviceId, name,latitude,longitude,address from xb_devices";
     if (process.env.NODE_ENV != "test") {
-      bsSQL += " where deviceId like '57%'";
+      bsSQL += " where test = 0";
     }
 
     DoSQL(bsSQL, function(err, deviceList) {
