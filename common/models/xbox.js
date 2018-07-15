@@ -1587,7 +1587,7 @@ module.exports = function(Xbox) {
     s = s * 6378.137; // EARTH_RADIUS;
     s = Math.round(s * 10000) / 10000; //输出为公里
     //s=s.toFixed(4);
-    return s*1.6;
+    return s;
   }
 
   Xbox.isNearDevice = function(lbsInfo, cb) {
