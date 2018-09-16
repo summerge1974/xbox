@@ -64,6 +64,7 @@ module.exports = function(Xboxmanager) {
               );
             } else {
               var kindergartenName = "";
+              var deviceid = '11111111';
               if (result.length == 0) {
                 var userName = userInfo.nickName;
                 if (_.isUndefined(userName)) {
@@ -78,9 +79,11 @@ module.exports = function(Xboxmanager) {
                 DoSQL(bsSQL);
               } else {
                 kindergartenName = result[0].kindergartenName;
+                deviceid = result[0].deviceId;
               }
               var outResult = {};
               outResult.kindergartenName = kindergartenName;
+              outResult.deviceId = deviceid;
               //outResult.token = resultToken;
               cb(
                 null,
