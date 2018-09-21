@@ -11,9 +11,13 @@ module.exports = function(Wechatevent) {
     EWTRACE("CreateWXMenu Begin");
 
     var menu = require("../../config/menu");
-    require("dotenv").config({
-      path: "./config/.env"
-    });
+    if (process.env.NODE_ENV == "maomaochong") {
+      require("dotenv").config({ path: "./config/.env-maomaochong" });
+      menu = require("../../config/menu-maomaochong");
+    } else {
+      require("dotenv").config({ path: "./config/.env" });
+    }
+
     var url =
       process.env.global_wxurl + "/createmenu?appId=" + process.env.wxAppID;
     needle.post(
