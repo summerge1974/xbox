@@ -727,6 +727,16 @@ module.exports = function(Xbox) {
   Xbox.getReservedBook = function(userInfo, cb) {
     EWTRACEBEGIN();
 
+    if ( _.isUndefined(userInfo.mobile)){
+      cb(
+        null,
+        EWTRACEEND({
+          status: 0,
+          result: "手机号码异常"
+        })
+      );
+      return;
+    }
     var ps = [];
     console.log('---------------------')
     console.log(userInfo);
