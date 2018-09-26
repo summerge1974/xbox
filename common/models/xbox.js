@@ -725,6 +725,8 @@ module.exports = function(Xbox) {
   });
 
   Xbox.getReservedBook = function(userInfo, cb) {
+    EWTRACEBEGIN();
+
     var ps = [];
     console.log('---------------------')
     console.log(userInfo);
@@ -873,11 +875,12 @@ module.exports = function(Xbox) {
     },
     description: "取预约的书籍",
     accepts: {
+      arg: "userInfo",
       type: "object",
       http: {
         source: "body"
       },
-      description: '{"mobile":18958064659}'
+      description: "{code:11111111}"
     },
     returns: {
       arg: "echostr",
