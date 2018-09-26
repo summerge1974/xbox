@@ -1753,6 +1753,7 @@ module.exports = function(Xbox) {
           deviceList.forEach(function(item) {
             if (item.deviceId == lastDeviceId) {
               result.lastActiveDevice = item;
+              result.onlineDeviceList.push(item);
             } else {
               result.onlineDeviceList.push(item);
             }
