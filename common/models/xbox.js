@@ -726,6 +726,7 @@ module.exports = function(Xbox) {
 
   Xbox.getReservedBook = function(userInfo, cb) {
     var ps = [];
+    console.log(userInfo);
     var bsSQL =
       "select cageId,deviceId from xb_devicebooks where schuser = " +
       userInfo.mobile;
