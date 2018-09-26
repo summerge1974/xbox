@@ -873,7 +873,6 @@ module.exports = function(Xbox) {
     },
     description: "取预约的书籍",
     accepts: {
-      arg: "bookId",
       type: "object",
       http: {
         source: "body"
