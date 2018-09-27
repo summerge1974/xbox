@@ -1467,7 +1467,7 @@ module.exports = function(Xbox) {
     http: {
       verb: "post"
     },
-    description: "获取测试token",
+    description: "获取线上活跃柜子列表",
     returns: {
       arg: "echostr",
       type: "object",
