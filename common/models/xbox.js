@@ -803,7 +803,7 @@ module.exports = function(Xbox) {
           var sendOver = find.userSocket.write(new Buffer(_tmp));
           console.log(
             "DeviceID:" +
-              bookId.deviceId +
+            _deviceBookInfo.Result[0].deviceId +
               ": DoorID：" +
               doorId +
               ", Data:" +
@@ -815,25 +815,19 @@ module.exports = function(Xbox) {
           if (sendOver) {
             bsSQL =
               "insert into xb_userbooks(openid,bookid,startDate) select '" +
-              OpenID.openid +
+              _userInfo.Result[0].openId +
               "' as openid, bookid, now() from xb_devicebooks where deviceId=" +
-              bookId.deviceId +
+              _deviceBookInfo.Result[0].deviceId +
               " and cageId = " +
-              bookId.cageId +
+              _deviceBookInfo.Result[0].cageId +
               ";";
             bsSQL +=
               "delete from xb_devicebooks where deviceId=" +
-              bookId.deviceId +
+              _deviceBookInfo.Result[0].deviceId +
               " and cageId = " +
-              bookId.cageId +
+              _deviceBookInfo.Result[0].cageId +
               ";";
 
-            bsSQL +=
-              "update xb_users set lastDeviceId = '" +
-              bookId.deviceId +
-              "' where openid = '" +
-              OpenID.openid +
-              "';";
 
             DoSQL(bsSQL, function(err) {
               if (err) {
