@@ -1452,12 +1452,18 @@ module.exports = function(Xbox) {
   Xbox.getOnlineBox = function(cb) {
     EWTRACEBEGIN();
     var socketList = app.get("m_socketList");
+    
+    var boxList = [];
+    socketList.forEach(function(item){
+      boxList.push(item.DeviceID)
+    })
+
 
     cb(
       null,
       EWTRACEEND({
         status: 0,
-        socketList: socketList
+        socketList: boxList
       })
     );
     
