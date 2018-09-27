@@ -1449,6 +1449,32 @@ module.exports = function(Xbox) {
     }
   });
 
+  Xbox.getOnlineBox = function(cb) {
+    EWTRACEBEGIN();
+    var socketList = app.get("m_socketList");
+
+    cb(
+      null,
+      EWTRACEEND({
+        status: 0,
+        socketList: socketList
+      })
+    );
+    
+  };
+
+  Xbox.remoteMethod("getOnlineBox", {
+    http: {
+      verb: "post"
+    },
+    description: "获取测试token",
+    returns: {
+      arg: "echostr",
+      type: "object",
+      root: true
+    }
+  });  
+
   function Str2Bytes(str) {
     var pos = 0;
     var len = str.length;
