@@ -828,6 +828,12 @@ module.exports = function(Xbox) {
               _deviceBookInfo.Result[0].cageId +
               ";";
 
+            bsSQL +=
+              "update xb_users set lastDeviceId = '" +
+              _deviceBookInfo.Result[0].deviceId +
+              "' where openid = '" +
+              _userInfo.Result[0].openId +
+              "';";
 
             DoSQL(bsSQL, function(err) {
               if (err) {
