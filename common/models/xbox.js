@@ -936,7 +936,7 @@ module.exports = function(Xbox) {
     bsSQL =
       "select * from xb_users where openid = '" +
       OpenID.openid +
-      "' and isvip = 1";
+      "' and isvip = 1  and datediff(expireDate,now()) > 0";
     var _userInfo = {};
     ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
 
