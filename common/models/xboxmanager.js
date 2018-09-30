@@ -64,7 +64,7 @@ module.exports = function(Xboxmanager) {
               );
             } else {
               var kindergartenName = "";
-              var deviceid = '11111111';
+              var deviceid = "11111111";
               if (result.length == 0) {
                 var userName = userInfo.nickName;
                 if (_.isUndefined(userName)) {
@@ -137,7 +137,7 @@ module.exports = function(Xboxmanager) {
     }
 
     var bsSQL =
-      "select name,phone,deviceid from xb_manager where openid = '" +
+      "select username,phone,deviceid from xb_manager where openid = '" +
       OpenID.openid +
       "'";
     DoSQL(bsSQL, function(err, result) {
@@ -199,54 +199,70 @@ module.exports = function(Xboxmanager) {
     }
 
     var bsSQL =
-      "select openid,a.bookid,b.title,b.author,date_format(startDate,'%Y-%m-%d') as startDate,date_format(date_add(startDate, interval 30 day),'%Y-%m-%d') as endDate from xb_userbooks a, xb_books b where a.bookid = b.bookid and openid = '" +
-      userInfo.id +
-      "' and returndate is null";
-    DoSQL(bsSQL, function(err, result) {
-      if (err) {
-        cb(
-          err,
-          EWTRACEEND({
-            status: 0,
-            result: ""
-          })
-        );
-      } else {
-        if (result.length == 0) {
-          cb(
-            null,
-            EWTRACEEND({
-              status: 0,
-              result: "用户未借书或已还清~"
-            })
-          );
-          return;
-        }
-
-        var _result = {};
-
-        _result.id = userInfo.id;
-        _result.lease = {};
-        _result.lease.startDate = result[0].startDate;
-        _result.lease.endDate = result[0].endDate;
-        _result.details = [];
-
-        result.forEach(function(item) {
-          var _detail = {};
-          _detail.id = item.bookid;
-          _detail.title = item.title;
-          _detail.author = item.author;
-          _result.details.push(_detail);
-        });
-
+      "select phone,deviceid from xb_manager where openid = '" +
+      OpenID.openid +
+      "' and deviceid <> 11111111";
+    DoSQL(bsSQL, function(err, managerlist) {
+      if (managerlist.length == 0) {
         cb(
           null,
           EWTRACEEND({
-            status: 1,
-            result: _result
+            status: 0,
+            result: "管理员权限有误~"
           })
         );
+        return;
       }
+      bsSQL =
+        "select openid,a.bookid,b.title,b.author,date_format(startDate,'%Y-%m-%d') as startDate,date_format(date_add(startDate, interval 30 day),'%Y-%m-%d') as endDate from xb_userbooks a, xb_books b where a.bookid = b.bookid and openid = '" +
+        userInfo.id +
+        "' and returndate is null";
+      DoSQL(bsSQL, function(err, result) {
+        if (err) {
+          cb(
+            err,
+            EWTRACEEND({
+              status: 0,
+              result: ""
+            })
+          );
+        } else {
+          if (result.length == 0) {
+            cb(
+              null,
+              EWTRACEEND({
+                status: 0,
+                result: "用户未借书或已还清~"
+              })
+            );
+            return;
+          }
+
+          var _result = {};
+
+          _result.id = userInfo.id;
+          _result.lease = {};
+          _result.lease.startDate = result[0].startDate;
+          _result.lease.endDate = result[0].endDate;
+          _result.details = [];
+
+          result.forEach(function(item) {
+            var _detail = {};
+            _detail.id = item.bookid;
+            _detail.title = item.title;
+            _detail.author = item.author;
+            _result.details.push(_detail);
+          });
+
+          cb(
+            null,
+            EWTRACEEND({
+              status: 1,
+              result: _result
+            })
+          );
+        }
+      });
     });
   };
   Xboxmanager.remoteMethod("getUserReturn", {
@@ -296,56 +312,71 @@ module.exports = function(Xboxmanager) {
       );
       return;
     }
-
     var bsSQL =
-      "select openid,a.bookid,b.title,b.author,date_format(startDate,'%Y-%m-%d') as startDate,date_format(date_add(startDate, interval 30 day),'%Y-%m-%d') as endDate from xb_userbooks a, xb_books b where a.bookid = b.bookid and openid in (SELECT openid FROM xb_users where mobile = '" +
-      userInfo.mobile +
-      "') and returndate is null";
-    DoSQL(bsSQL, function(err, result) {
-      if (err) {
-        cb(
-          err,
-          EWTRACEEND({
-            status: 0,
-            result: ""
-          })
-        );
-      } else {
-        if (result.length == 0) {
-          cb(
-            null,
-            EWTRACEEND({
-              status: 0,
-              result: "用户未借书或已还清~"
-            })
-          );
-          return;
-        }
-
-        var _result = {};
-
-        _result.id = userInfo.id;
-        _result.lease = {};
-        _result.lease.startDate = result[0].startDate;
-        _result.lease.endDate = result[0].endDate;
-        _result.details = [];
-
-        result.forEach(function(item) {
-          var _detail = {};
-          _detail.id = item.bookid;
-          _detail.title = item.title;
-          _detail.author = item.author;
-          _result.details.push(_detail);
-        });
-
+      "select phone,deviceid from xb_manager where openid = '" +
+      OpenID.openid +
+      "' and deviceid <> 11111111";
+    DoSQL(bsSQL, function(err, managerlist) {
+      if (managerlist.length == 0) {
         cb(
           null,
           EWTRACEEND({
-            status: 1,
-            result: _result
+            status: 0,
+            result: "管理员权限有误~"
           })
         );
+        return;
       }
+      bsSQL =
+        "select openid,a.bookid,b.title,b.author,date_format(startDate,'%Y-%m-%d') as startDate,date_format(date_add(startDate, interval 30 day),'%Y-%m-%d') as endDate from xb_userbooks a, xb_books b where a.bookid = b.bookid and openid in (SELECT openid FROM xb_users where mobile = '" +
+        userInfo.mobile +
+        "') and returndate is null";
+      DoSQL(bsSQL, function(err, result) {
+        if (err) {
+          cb(
+            err,
+            EWTRACEEND({
+              status: 0,
+              result: ""
+            })
+          );
+        } else {
+          if (result.length == 0) {
+            cb(
+              null,
+              EWTRACEEND({
+                status: 0,
+                result: "用户未借书或已还清~"
+              })
+            );
+            return;
+          }
+
+          var _result = {};
+
+          _result.id = userInfo.id;
+          _result.lease = {};
+          _result.lease.startDate = result[0].startDate;
+          _result.lease.endDate = result[0].endDate;
+          _result.details = [];
+
+          result.forEach(function(item) {
+            var _detail = {};
+            _detail.id = item.bookid;
+            _detail.title = item.title;
+            _detail.author = item.author;
+            _result.details.push(_detail);
+          });
+
+          cb(
+            null,
+            EWTRACEEND({
+              status: 1,
+              result: _result
+            })
+          );
+        }
+      });
     });
   };
   Xboxmanager.remoteMethod("getUserReturnByMobile", {
@@ -395,29 +426,44 @@ module.exports = function(Xboxmanager) {
       );
       return;
     }
-
     var bsSQL =
-      "update xb_userbooks set returndate = now() where openid in (SELECT openid FROM xb_users where mobile = '" +
-      userInfo.mobile +
-      "') and returndate is null";
-    DoSQL(bsSQL, function(err, result) {
-      if (err) {
-        cb(
-          err,
-          EWTRACEEND({
-            status: 0,
-            result: ""
-          })
-        );
-      } else {
+      "select phone,deviceid from xb_manager where openid = '" +
+      OpenID.openid +
+      "' and deviceid <> 11111111";
+    DoSQL(bsSQL, function(err, managerlist) {
+      if (managerlist.length == 0) {
         cb(
           null,
           EWTRACEEND({
-            status: 1,
-            result: ""
+            status: 0,
+            result: "管理员权限有误~"
           })
         );
+        return;
       }
+      bsSQL =
+        "update xb_userbooks set returndate = now() where openid in (SELECT openid FROM xb_users where mobile = '" +
+        userInfo.mobile +
+        "') and returndate is null";
+      DoSQL(bsSQL, function(err, result) {
+        if (err) {
+          cb(
+            err,
+            EWTRACEEND({
+              status: 0,
+              result: ""
+            })
+          );
+        } else {
+          cb(
+            null,
+            EWTRACEEND({
+              status: 1,
+              result: ""
+            })
+          );
+        }
+      });
     });
   };
   Xboxmanager.remoteMethod("confirmUserReturnByMobile", {
@@ -469,27 +515,43 @@ module.exports = function(Xboxmanager) {
     }
 
     var bsSQL =
-      "update xb_userbooks set returndate = now() where openid = '" +
-      userInfo.id +
-      "' and returndate is null";
-    DoSQL(bsSQL, function(err, result) {
-      if (err) {
-        cb(
-          err,
-          EWTRACEEND({
-            status: 0,
-            result: ""
-          })
-        );
-      } else {
+      "select phone,deviceid from xb_manager where openid = '" +
+      OpenID.openid +
+      "' and deviceid <> 11111111";
+    DoSQL(bsSQL, function(err, managerlist) {
+      if (managerlist.length == 0) {
         cb(
           null,
           EWTRACEEND({
-            status: 1,
-            result: ""
+            status: 0,
+            result: "管理员权限有误~"
           })
         );
+        return;
       }
+      bsSQL =
+        "update xb_userbooks set returndate = now() where openid = '" +
+        userInfo.id +
+        "' and returndate is null";
+      DoSQL(bsSQL, function(err, result) {
+        if (err) {
+          cb(
+            err,
+            EWTRACEEND({
+              status: 0,
+              result: ""
+            })
+          );
+        } else {
+          cb(
+            null,
+            EWTRACEEND({
+              status: 1,
+              result: ""
+            })
+          );
+        }
+      });
     });
   };
   Xboxmanager.remoteMethod("confirmUserReturn", {
@@ -541,72 +603,88 @@ module.exports = function(Xboxmanager) {
     }
 
     var bsSQL =
-      "SELECT cagecount FROM xb_devices where deviceid in (select deviceid from xb_manager where openid = '" +
+      "select phone,deviceid from xb_manager where openid = '" +
       OpenID.openid +
-      "')";
-    DoSQL(bsSQL, function(err, result1) {
-      if (err) {
+      "' and deviceid <> 11111111";
+    DoSQL(bsSQL, function(err, managerlist) {
+      if (managerlist.length == 0) {
         cb(
-          err,
+          null,
           EWTRACEEND({
             status: 0,
-            result: ""
+            result: "管理员权限有误~"
           })
         );
-      } else {
-        bsSQL =
-          "SELECT cageId,a.bookid as id,b.title,b.image,b.author FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid in (select deviceid from xb_manager where openid = '" +
-          OpenID.openid +
-          "') order by cageid";
-        DoSQL(bsSQL, function(err, result) {
-          if (err) {
-            cb(
-              err,
-              EWTRACEEND({
-                status: 0,
-                result: ""
-              })
-            );
-          } else {
-            var _result = {};
+        return;
+      }
+      bsSQL =
+        "SELECT cagecount FROM xb_devices where deviceid in (select deviceid from xb_manager where openid = '" +
+        OpenID.openid +
+        "')";
+      DoSQL(bsSQL, function(err, result1) {
+        if (err) {
+          cb(
+            err,
+            EWTRACEEND({
+              status: 0,
+              result: ""
+            })
+          );
+        } else {
+          bsSQL =
+            "SELECT cageId,a.bookid as id,b.title,b.image,b.author FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid in (select deviceid from xb_manager where openid = '" +
+            OpenID.openid +
+            "') order by cageid";
+          DoSQL(bsSQL, function(err, result) {
+            if (err) {
+              cb(
+                err,
+                EWTRACEEND({
+                  status: 0,
+                  result: ""
+                })
+              );
+            } else {
+              var _result = {};
 
-            _result.totalCount = result1[0].cagecount;
-            _result.emptyList = [];
-            _result.partialList = [];
-            _result.fullList = [];
+              _result.totalCount = result1[0].cagecount;
+              _result.emptyList = [];
+              _result.partialList = [];
+              _result.fullList = [];
 
-            for (var i = 1; i <= result1[0].cagecount; i++) {
-              var _filter = _.filter(result, function(fitem) {
-                return fitem.cageId == i;
-              });
+              for (var i = 1; i <= result1[0].cagecount; i++) {
+                var _filter = _.filter(result, function(fitem) {
+                  return fitem.cageId == i;
+                });
 
-              var _detail = {};
-              _detail.id = i;
-              _detail.details = [];
+                var _detail = {};
+                _detail.id = i;
+                _detail.details = [];
 
-              if (_.isEmpty(_filter)) {
-                _result.emptyList.push(_detail);
-              } else {
-                if (_filter.length < 3) {
-                  _detail.details = _filter;
-                  _result.partialList.push(_detail);
+                if (_.isEmpty(_filter)) {
+                  _result.emptyList.push(_detail);
                 } else {
-                  //_detail.details = _filter;
-                  //_result.fullList.push(_detail);
+                  if (_filter.length < 3) {
+                    _detail.details = _filter;
+                    _result.partialList.push(_detail);
+                  } else {
+                    //_detail.details = _filter;
+                    //_result.fullList.push(_detail);
+                  }
                 }
               }
-            }
 
-            cb(
-              null,
-              EWTRACEEND({
-                status: 1,
-                result: _result
-              })
-            );
-          }
-        });
-      }
+              cb(
+                null,
+                EWTRACEEND({
+                  status: 1,
+                  result: _result
+                })
+              );
+            }
+          });
+        }
+      });
     });
   };
   Xboxmanager.remoteMethod("getCageList", {
@@ -648,58 +726,81 @@ module.exports = function(Xboxmanager) {
     }
 
     var bsSQL =
-      "select deviceId from xb_manager where openid = '" + OpenID.openid + "'";
-    DoSQL(bsSQL, function(err, result) {
-      if (result.length == 0) {
+      "select phone,deviceid from xb_manager where openid = '" +
+      OpenID.openid +
+      "' and deviceid <> 11111111";
+    DoSQL(bsSQL, function(err, managerlist) {
+      if (managerlist.length == 0) {
         cb(
-          err,
+          null,
           EWTRACEEND({
             status: 0,
-            result: ""
+            result: "管理员权限有误~"
           })
         );
         return;
       }
-      var _deviceId = result[0].deviceId;
-
-      var doorId = convertNumber(deviceInfo.id);
-      EWTRACE(doorId);
-
-      var socketList = app.get("m_socketList");
-
-      var find = _.find(socketList, function(item) {
-        return item.DeviceID == _deviceId;
-      });
-      if (!_.isUndefined(find)) {
-        // 计算二进制BCC校验码，放入发送的最后一个字节中
-        var _tmp = Str2Bytes(doorId.toString());
-
-        var _val = undefined;
-        for (var i in _tmp) {
-          if (_.isUndefined(_val)) {
-            _val = _tmp[i];
-          } else {
-            _val ^= _tmp[i];
-          }
+      bsSQL =
+        "select deviceId from xb_manager where openid = '" +
+        OpenID.openid +
+        "'";
+      DoSQL(bsSQL, function(err, result) {
+        if (result.length == 0) {
+          cb(
+            err,
+            EWTRACEEND({
+              status: 0,
+              result: ""
+            })
+          );
+          return;
         }
-        _tmp.push(_val);
-        // 计算二进制BCC校验码，放入发送的最后一个字节中
+        var _deviceId = result[0].deviceId;
 
-        var sendOver = find.userSocket.write(new Buffer(_tmp));
-        console.log(
-          "DeviceID:" + _deviceId + ": Data：" + _tmp + ", sendOver:" + sendOver
-        );
+        var doorId = convertNumber(deviceInfo.id);
+        EWTRACE(doorId);
 
-        cb(null, {
-          status: 1,
-          result: ""
+        var socketList = app.get("m_socketList");
+
+        var find = _.find(socketList, function(item) {
+          return item.DeviceID == _deviceId;
         });
-      } else {
-        cb(null, {
-          status: 0,
-          result: "device not find!"
-        });
-      }
+        if (!_.isUndefined(find)) {
+          // 计算二进制BCC校验码，放入发送的最后一个字节中
+          var _tmp = Str2Bytes(doorId.toString());
+
+          var _val = undefined;
+          for (var i in _tmp) {
+            if (_.isUndefined(_val)) {
+              _val = _tmp[i];
+            } else {
+              _val ^= _tmp[i];
+            }
+          }
+          _tmp.push(_val);
+          // 计算二进制BCC校验码，放入发送的最后一个字节中
+
+          var sendOver = find.userSocket.write(new Buffer(_tmp));
+          console.log(
+            "DeviceID:" +
+              _deviceId +
+              ": Data：" +
+              _tmp +
+              ", sendOver:" +
+              sendOver
+          );
+
+          cb(null, {
+            status: 1,
+            result: ""
+          });
+        } else {
+          cb(null, {
+            status: 0,
+            result: "device not find!"
+          });
+        }
+      });
     });
   };
   Xboxmanager.remoteMethod("openCage", {
@@ -749,96 +850,113 @@ module.exports = function(Xboxmanager) {
       );
       return;
     }
-
     var bsSQL =
-      "select deviceId from xb_manager where openid = '" + OpenID.openid + "'";
-    DoSQL(bsSQL, function(err, result) {
-      if (result.length == 0) {
+      "select phone,deviceid from xb_manager where openid = '" +
+      OpenID.openid +
+      "' and deviceid <> 11111111";
+    DoSQL(bsSQL, function(err, managerlist) {
+      if (managerlist.length == 0) {
         cb(
-          err,
+          null,
           EWTRACEEND({
             status: 0,
-            result: ""
+            result: "管理员权限有误~"
           })
         );
         return;
       }
-      var _deviceId = result[0].deviceId;
-
       bsSQL =
-        "select bookid as id, title,image,author from xb_books where barcode = '" +
-        deviceInfo.isbn +
+        "select deviceId from xb_manager where openid = '" +
+        OpenID.openid +
         "'";
-
       DoSQL(bsSQL, function(err, result) {
-        if (err) {
+        if (result.length == 0) {
           cb(
             err,
             EWTRACEEND({
               status: 0,
-              result: err.message
+              result: ""
             })
           );
-        } else {
-          if (result.length == 0) {
+          return;
+        }
+        var _deviceId = result[0].deviceId;
+
+        bsSQL =
+          "select bookid as id, title,image,author from xb_books where barcode = '" +
+          deviceInfo.isbn +
+          "'";
+
+        DoSQL(bsSQL, function(err, result) {
+          if (err) {
             cb(
-              null,
+              err,
               EWTRACEEND({
                 status: 0,
-                result: "条形码未找到"
+                result: err.message
               })
             );
           } else {
-            bsSQL =
-              "insert into xb_devicebooks(deviceid,cageid,bookid) values('" +
-              _deviceId +
-              "','" +
-              deviceInfo.cageId +
-              "'," +
-              result[0].id +
-              ");";
-            DoSQL(bsSQL, function(err) {
-              if (err) {
-                cb(
-                  err,
-                  EWTRACEEND({
-                    status: 0,
-                    result: err.message
-                  })
-                );
-              } else {
-                bsSQL =
-                  "select " +
-                  deviceInfo.cageId +
-                  " as cageId, b.bookId,b.title,b.image,b.author from xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid = '" +
-                  _deviceId +
-                  "' and cageid = " +
-                  deviceInfo.cageId +
-                  " and a.bookid = " +
-                  result[0].id;
-                DoSQL(bsSQL, function(err, resultbox) {
-                  if (err) {
-                    cb(
-                      err,
-                      EWTRACEEND({
-                        status: 0,
-                        result: err.message
-                      })
-                    );
-                  } else {
-                    cb(
-                      null,
-                      EWTRACEEND({
-                        status: 1,
-                        result: resultbox
-                      })
-                    );
-                  }
-                });
-              }
-            });
+            if (result.length == 0) {
+              cb(
+                null,
+                EWTRACEEND({
+                  status: 0,
+                  result: "条形码未找到"
+                })
+              );
+            } else {
+              bsSQL =
+                "insert into xb_devicebooks(deviceid,cageid,bookid) values('" +
+                _deviceId +
+                "','" +
+                deviceInfo.cageId +
+                "'," +
+                result[0].id +
+                ");";
+              DoSQL(bsSQL, function(err) {
+                if (err) {
+                  cb(
+                    err,
+                    EWTRACEEND({
+                      status: 0,
+                      result: err.message
+                    })
+                  );
+                } else {
+                  bsSQL =
+                    "select " +
+                    deviceInfo.cageId +
+                    " as cageId, b.bookId,b.title,b.image,b.author from xb_devicebooks a, xb_books b where a.bookid = b.bookid and deviceid = '" +
+                    _deviceId +
+                    "' and cageid = " +
+                    deviceInfo.cageId +
+                    " and a.bookid = " +
+                    result[0].id;
+                  DoSQL(bsSQL, function(err, resultbox) {
+                    if (err) {
+                      cb(
+                        err,
+                        EWTRACEEND({
+                          status: 0,
+                          result: err.message
+                        })
+                      );
+                    } else {
+                      cb(
+                        null,
+                        EWTRACEEND({
+                          status: 1,
+                          result: resultbox
+                        })
+                      );
+                    }
+                  });
+                }
+              });
+            }
           }
-        }
+        });
       });
     });
   };
