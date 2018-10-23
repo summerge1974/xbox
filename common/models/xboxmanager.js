@@ -260,7 +260,7 @@ module.exports = function(Xboxmanager) {
               }
               bsSQL =
                 "insert into xb_manager(openid,username,deviceid,addtime,phone) values('" +
-                _userInfo.openid +
+                OpenID.openid +
                 "','" +
                 userName +
                 "','11111111',now(),'" +
