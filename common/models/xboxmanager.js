@@ -81,7 +81,7 @@ module.exports = function(Xboxmanager) {
                   null,
                   EWTRACEEND({
                     status: 1,
-                    result: [{deviceId:-1,name:'审核中'}],
+                    result: [],
                     token: {}
                   })
                 );
@@ -93,14 +93,23 @@ module.exports = function(Xboxmanager) {
                 outResult.deviceId = deviceid;
                 outResult.deviceList = result;
                 //outResult.token = resultToken;
-                cb(
-                  null,
+                if ( deviceid == '11111111'){
                   EWTRACEEND({
                     status: 1,
-                    result: outResult,
-                    token: resultToken
+                    result: [{deviceId:-1,name:'审核中'}],
+                    token: {}
                   })
-                );                
+                }
+                else{
+                  cb(
+                    null,
+                    EWTRACEEND({
+                      status: 1,
+                      result: outResult,
+                      token: resultToken
+                    })
+                  );  
+                }
               }
 
             }
