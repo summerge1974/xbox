@@ -80,8 +80,8 @@ module.exports = function(Xboxmanager) {
                 cb(
                   null,
                   EWTRACEEND({
-                    status: 2,
-                    result: {},
+                    status: 1,
+                    result: [{deviceId:-1,name:'审核中'}],
                     token: {}
                   })
                 );
@@ -361,6 +361,68 @@ module.exports = function(Xboxmanager) {
       verb: "post"
     },
     description: "管理员登录",
+    accepts: {
+      arg: "token",
+      type: "string",
+      http: function(ctx) {
+        var req = ctx.req;
+        return req.headers.token;
+      },
+      description: "token"
+    },
+    returns: {
+      arg: "echostr",
+      type: "object",
+      root: true
+    }
+  });
+
+  Xboxmanager.getDeviceList = function(token, cb) {
+    EWTRACEBEGIN();
+
+    var OpenID = {};
+    try {
+      OpenID = GetOpenIDFromToken(token);
+    } catch (err) {
+      cb(
+        err,
+        EWTRACEEND({
+          status: 0,
+          result: ""
+        })
+      );
+      return;
+    }
+
+    var bsSQL =
+      "select b.deviceId,b.name from xb_manager a, xb_devices b where a.openid = '" +
+      OpenID.openid +
+      "' and a.deviceId = b.deviceId";
+    DoSQL(bsSQL, function(err, result) {
+      if (err) {
+        cb(
+          err,
+          EWTRACEEND({
+            status: 0,
+            result: ""
+          })
+        );
+      } else {
+        cb(
+          err,
+          EWTRACEEND({
+            status: 1,
+            result: result
+          })
+        );
+      }
+    });
+  };
+  Xboxmanager.remoteMethod("getDeviceList", {
+    http: {
+      verb: "post"
+    },
+    description: "获取管理员柜子列表",
     accepts: {
       arg: "token",
       type: "string",
