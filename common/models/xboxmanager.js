@@ -94,11 +94,14 @@ module.exports = function(Xboxmanager) {
                 outResult.deviceList = result;
                 //outResult.token = resultToken;
                 if (deviceid == "11111111") {
-                  EWTRACEEND({
-                    status: 1,
-                    result: [{ deviceId: -1, name: "审核中" }],
-                    token: resultToken
-                  });
+                  cb(
+                    null,
+                    EWTRACEEND({
+                      status: 1,
+                      result: [{ deviceId: -1, name: "审核中" }],
+                      token: resultToken
+                    })
+                  );
                 } else {
                   cb(
                     null,
