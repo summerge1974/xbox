@@ -97,7 +97,7 @@ module.exports = function(Xboxmanager) {
                   EWTRACEEND({
                     status: 1,
                     result: [{ deviceId: -1, name: "审核中" }],
-                    token: {}
+                    token: resultToken
                   });
                 } else {
                   cb(
