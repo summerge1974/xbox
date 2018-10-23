@@ -254,7 +254,7 @@ module.exports = function(Xboxmanager) {
             var kindergartenName = "";
             var deviceid = "11111111";
             if (result.length == 0) {
-              var userName = _userInfo.nickName;
+              var userName = OpenID.nickName;
               if (_.isUndefined(userName)) {
                 userName = "";
               }
