@@ -93,14 +93,13 @@ module.exports = function(Xboxmanager) {
                 outResult.deviceId = deviceid;
                 outResult.deviceList = result;
                 //outResult.token = resultToken;
-                if ( deviceid == '11111111'){
+                if (deviceid == "11111111") {
                   EWTRACEEND({
                     status: 1,
-                    result: [{deviceId:-1,name:'审核中'}],
+                    result: [{ deviceId: -1, name: "审核中" }],
                     token: {}
-                  })
-                }
-                else{
+                  });
+                } else {
                   cb(
                     null,
                     EWTRACEEND({
@@ -108,10 +107,9 @@ module.exports = function(Xboxmanager) {
                       result: outResult,
                       token: resultToken
                     })
-                  );  
+                  );
                 }
               }
-
             }
           });
         });
@@ -209,33 +207,41 @@ module.exports = function(Xboxmanager) {
     }
   });
 
-  Xboxmanager.registerMananger = function(userInfo, cb) {
+  Xboxmanager.registerMananger = function(token, userInfo, cb) {
     EWTRACEBEGIN();
+
+    var OpenID = {};
+    try {
+      OpenID = GetOpenIDFromToken(token);
+    } catch (err) {
+      cb(
+        err,
+        EWTRACEEND({
+          status: 0,
+          result: ""
+        })
+      );
+      return;
+    }
+
     var bsSQL =
       "select * from  xb_regcode  where  mobile = '" +
       userInfo.mobile +
-      "' and regcode = " + userInfo.regCode;
+      "' and regcode = " +
+      userInfo.regCode;
     DoSQL(bsSQL, function(err, result) {
-      if (err || result.length == 0 ) {
+      if (err || result.length == 0) {
         cb(
           null,
           EWTRACEEND({
             status: 0,
-            token: '验证码有误，请重新输入'
+            token: "验证码有误，请重新输入"
           })
         );
       } else {
-        var url =
-          "https://api.weixin.qq.com/sns/jscode2session?appid=" +
-          process.env.wxProductProjectAppID +
-          "&secret=" +
-          process.env.wxProductProjectSecret +
-          "&js_code=" +
-          userInfo.code +
-          "&grant_type=authorization_code";
-        EWTRACE(url);
-
-        needle.get(encodeURI(url), {}, function(err, resp) {
+        bsSQL =
+          "select * from xb_manager where openid = '" + OpenID.openid + "'";
+        DoSQL(bsSQL, function(err, result) {
           if (err) {
             cb(
               err,
@@ -245,60 +251,30 @@ module.exports = function(Xboxmanager) {
               })
             );
           } else {
-            var _userInfo = JSON.parse(resp.body);
-            if (!_.isUndefined(_userInfo.errcode)) {
-              cb(
-                null,
-                EWTRACEEND({
-                  status: 0,
-                  token: _userInfo.errmsg
-                })
-              );
-              return;
-            }
-            console.log(_userInfo);
-            getWeChatToken(JSON.parse(resp.body)).then(function(resultToken) {
-              EWTRACE(resp.body);
-
+            var kindergartenName = "";
+            var deviceid = "11111111";
+            if (result.length == 0) {
+              var userName = _userInfo.nickName;
+              if (_.isUndefined(userName)) {
+                userName = "";
+              }
               bsSQL =
-                "select * from xb_manager where openid = '" +
+                "insert into xb_manager(openid,username,deviceid,addtime,phone) values('" +
                 _userInfo.openid +
-                "'";
-              DoSQL(bsSQL, function(err, result) {
-                if (err) {
-                  cb(
-                    err,
-                    EWTRACEEND({
-                      status: 0,
-                      token: err.message
-                    })
-                  );
-                } else {
-                  var kindergartenName = "";
-                  var deviceid = "11111111";
-                  if (result.length == 0) {
-                    var userName = _userInfo.nickName;
-                    if (_.isUndefined(userName)) {
-                      userName = "";
-                    }
-                    bsSQL =
-                      "insert into xb_manager(openid,username,deviceid,addtime,phone) values('" +
-                      _userInfo.openid +
-                      "','" +
-                      userName +
-                      "','11111111',now(),'"+userInfo.mobile+"')";
-                    DoSQL(bsSQL);
-                  } 
+                "','" +
+                userName +
+                "','11111111',now(),'" +
+                userInfo.mobile +
+                "')";
+              DoSQL(bsSQL);
+            }
 
-                  cb(
-                    null,
-                    EWTRACEEND({
-                      status: 1
-                    })
-                  );
-                }
-              });
-            });
+            cb(
+              null,
+              EWTRACEEND({
+                status: 1
+              })
+            );
           }
         });
       }
@@ -309,14 +285,25 @@ module.exports = function(Xboxmanager) {
       verb: "post"
     },
     description: "管理员注册",
-    accepts: {
-      arg: "userInfo",
-      type: "object",
-      http: {
-        source: "body"
+    accepts: [
+      {
+        arg: "token",
+        type: "string",
+        http: function(ctx) {
+          var req = ctx.req;
+          return req.headers.token;
+        },
+        description: "token"
       },
-      description: "{code:11111111,mobile:18958064659,regCode:1234}"
-    },
+      {
+        arg: "userInfo",
+        type: "object",
+        http: {
+          source: "body"
+        },
+        description: "{mobile:18958064659,regCode:1234}"
+      }
+    ],
     returns: {
       arg: "echostr",
       type: "object",
