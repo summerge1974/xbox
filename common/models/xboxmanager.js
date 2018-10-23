@@ -82,7 +82,7 @@ module.exports = function(Xboxmanager) {
                   EWTRACEEND({
                     status: 1,
                     result: [],
-                    token: {}
+                    token: resultToken
                   })
                 );
               } else {
