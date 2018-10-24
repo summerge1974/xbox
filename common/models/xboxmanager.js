@@ -875,7 +875,7 @@ module.exports = function(Xboxmanager) {
         return;
       }
 
-      if (_.isUndefined(deviceInfo)) {
+      if (_.isUndefined(deviceInfo) || _.isUndefined(deviceInfo.deviceId)) {
         bsSQL =
           "SELECT cagecount FROM xb_devices where deviceid in (select deviceid from xb_manager where openid = '" +
           OpenID.openid +
