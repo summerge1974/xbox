@@ -844,7 +844,7 @@ module.exports = function(Xboxmanager) {
 
   Xboxmanager.getCageList = function(token, deviceInfo, cb) {
     EWTRACEBEGIN();
-
+    console.log(deviceInfo);
     var OpenID = {};
     try {
       OpenID = GetOpenIDFromToken(token);
