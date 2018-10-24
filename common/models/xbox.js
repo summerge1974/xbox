@@ -371,7 +371,7 @@ module.exports = function(Xbox) {
     ps.push(ExecuteSyncSQLResult(bsSQL, _userInfo));
 
     bsSQL =
-      "SELECT a.deviceId,a.cageId,a.bookId,b.categoryId,b.title,b.image,date_format(now(),'%Y-%m-%d') as startDate, date_format(date_add(now(), interval b.leaseDays day),'%Y-%m-%d') as endDate,a.schuser FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and a.deviceId like '" +
+      "SELECT a.deviceId,a.cageId,a.bookId,ifnull(b.categoryId,1) as categoryId,b.title,b.image,date_format(now(),'%Y-%m-%d') as startDate, date_format(date_add(now(), interval b.leaseDays day),'%Y-%m-%d') as endDate,a.schuser FROM xb_devicebooks a, xb_books b where a.bookid = b.bookid and a.deviceId like '" +
       _deviceId +
       "' order by a.cageId";
     var _booksList = {};
