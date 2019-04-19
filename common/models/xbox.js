@@ -1532,7 +1532,7 @@ module.exports = function(Xbox) {
     _detail(detail);
     return detail.num;
   };
-
+ 
   function convertNumber(strboxId) {
     var byteNumber = "8A";
     var boxId = parseInt(strboxId);
