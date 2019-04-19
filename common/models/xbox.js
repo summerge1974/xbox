@@ -1540,7 +1540,7 @@ module.exports = function(Xbox) {
       byteNumber += "00";
       byteNumber += pad(boxId.toString(16).toUpperCase(), 2);
     } else {
-      var page = parseInt((boxId - 10) / 40);
+      var page = parseInt((boxId - 11) / 40);
       byteNumber += pad(page + 1, 2);
       byteNumber += pad((boxId - 10 - page * 40).toString(16).toUpperCase(), 2);
     }
@@ -1695,7 +1695,28 @@ module.exports = function(Xbox) {
     }
   });
 
+
+  function Str2Bytes(str) {
+    var pos = 0;
+    var len = str.length;
+    if (len % 2 != 0) {
+      return null;
+    }
+    len /= 2;
+    var hexA = new Array();
+    for (var i = 0; i < len; i++) {
+      var s = str.substr(pos, 2);
+      var v = parseInt(s, 16);
+      hexA.push(v);
+      pos += 2;
+    }
+    return hexA;
+  }
+
   Xbox.rename = function(cb) {
+   //var tmp1 = Str2Bytes('DQL8+E58EgVxbdsDKdrot2hM7dagUJc4WIuW/l0vFV6NanFhReTeiTkXTHBmTwtRPBbor0usYWnXIcLmj2V7id/5se5mi3RTKyD/FuxDcwCb9Yj8n6GbCbpKUU5bNIg6qGzkYySSOIv2DhjiLNSu/qzO2OrrsqUrghqzMCxfs5xnaLqQlPpFnsop0WG94KT9p7JcZy0ePhuR/W9VK6tAj2MRR42MmfWYlIQJmUmX9xGcV4JUmKBpxGZSrsP1Sly1zHrHTuwpacr8m3GH9hbHNxLpytKV/D4n');
+
+
     EWTRACE("rename Begin");
     var shell = require("shelljs");
 
