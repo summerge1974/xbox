@@ -1354,7 +1354,7 @@ module.exports = function(Xboxmanager) {
       byteNumber += "00";
       byteNumber += pad(boxId.toString(16).toUpperCase(), 2);
     } else {
-      var page = parseInt((boxId - 10) / 40);
+      var page = parseInt((boxId - 11) / 40);
       byteNumber += pad(page + 1, 2);
       byteNumber += pad((boxId - 10 - page * 40).toString(16).toUpperCase(), 2);
     }
