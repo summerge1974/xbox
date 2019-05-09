@@ -1159,7 +1159,7 @@ module.exports = function(Xbox) {
     ps.push(ExecuteSyncSQLResult(bsSQL, _schList));
 
     bsSQL =
-      "SELECT b.bookId as id, b.title, b.author,date_format(a.startDate,'%Y-%m-%d') as startDate,date_format(date_add(a.startDate, interval b.leaseDays day),'%Y-%m-%d') as endDate ,date_format(a.returnDate,'%Y-%m-%d') as returnDate,b.image FROM xb_userbooks a, xb_books b where a.bookid = b.bookid and a.openid = '" +
+      "SELECT b.bookId as id, b.title, b.author,date_format(a.startDate,'%Y-%m-%d') as startDate,date_format(date_add(a.startDate, interval b.leaseDays day),'%Y-%m-%d') as endDate ,date_format(a.returnDate,'%Y-%m-%d') as returnDate,b.image FROM xb_userbooks a, xb_books b where a.returnDate is null and a.bookid = b.bookid and a.openid = '" +
       OpenID.openid +
       "' order by a.startDate desc";
     var _BorrowList = {};
