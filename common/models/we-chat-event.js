@@ -87,26 +87,50 @@ module.exports = function(Wechatevent) {
     if (return_code == "SUCCESS" && result_code == "SUCCESS") {
       var _orderid = a.xml.out_trade_no[0];
       var _openid = a.xml.openid[0];
-      var bsSQL =
-        "update xb_userOrders set paystatus = 'commit' where payorderid = '" +
-        _orderid +
-        "';";
-      bsSQL +=
-        "update xb_users set isvip = 1,expiredate = date_add(now(),interval 1 year) where openid = '" +
-        _openid +
-        "'";
 
-      DoSQL(bsSQL, function(err, result) {
-        if (err) {
-          var backXml =
-            '<xml xmlns="eshine"><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[]]></return_msg></xml>';
-          cb(null, backXml, "text/xml; charset=utf-8");
-        } else {
-          var backXml =
-            '<xml xmlns="eshine"><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[]]></return_msg></xml>';
-          cb(null, backXml, "text/xml; charset=utf-8");
-        }
+      var bsSQL1 = "select buytime from xb_userOrders where payorderid = '" +
+      _orderid +
+      "';";
+      DoSQL(bsSQL1, function(err, result1) {
+          var buytime = result1[0].buytime;
+
+          var bsSQL =
+              "update xb_userOrders set paystatus = 'commit' where payorderid = '" +
+              _orderid +
+              "';";
+
+          if ( buytime == 1 ){
+            bsSQL +=
+            "update xb_users set isvip = 1,expiredate = date_add(now(),interval 1 year) where openid = '" +
+            _openid +
+            "'";
+          }
+          if ( buytime == 2 ){
+            bsSQL +=
+            "update xb_users set isvip = 1,expiredate = date_add(now(),interval 180 day) where openid = '" +
+            _openid +
+            "'";
+          }else{
+            bsSQL +=
+            "update xb_users set isvip = 1,expiredate = '2019-07-15' where openid = '" +
+            _openid +
+            "'";
+          }
+          DoSQL(bsSQL, function(err, result) {
+              if (err) {
+                var backXml =
+                  '<xml xmlns="eshine"><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[]]></return_msg></xml>';
+                cb(null, backXml, "text/xml; charset=utf-8");
+              } else {
+                var backXml =
+                  '<xml xmlns="eshine"><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[]]></return_msg></xml>';
+                cb(null, backXml, "text/xml; charset=utf-8");
+              }
+          });
       });
+
+
+
     }
   };
 
